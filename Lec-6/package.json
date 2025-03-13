@@ -1,0 +1,14 @@
+{
+  "name": "express-intro",
+  "version": "1.0.0",
+  "description": "Introduction to Express.js & installation.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Madhur Purohit",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
