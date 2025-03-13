@@ -1,27 +1,77 @@
-# Logs
-logs
+# Node.js / General Dependencies
+node_modules/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+package-lock.json  # Optional: include if using yarn exclusively
+yarn.lock          # Optional: include if using npm exclusively
 
-.parcel-cache/
+# Build Output
 dist/
 build/
-node_modules/
-dist
-dist-ssr
-*.local
+public/build/
+*.min.js
+*.min.css
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# MongoDB
+*.mongodump
+mongod.lock
+
+# React-specific
+.DS_Store       # macOS
+Thumbs.db       # Windows
+*.swp
+*.swo
+
+# Development Tools
+.vscode/        # VS Code settings
+.idea/          # JetBrains IDEs
+*.sublime-*     # Sublime Text
+*.eslintcache
+*.tsbuildinfo
+
+# Testing
+coverage/
+*.lcov
+test-results/
+junit.xml
+
+# Temporary Files
+*.tmp
+*.temp
+*.bak
+*~
+
+# OS Generated Files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Production
+pm2.log
+logs/
+*.pid
+
+# Documentation
+docs/_build/
+*.md.bak
+
+# Optional: Large media files (uncomment if needed)
+# public/uploads/
+# media/
+# *.mp4
+# *.mp3
+# *.wav
+
+# Common MERN Stack folder exclusions (uncomment based on your structure)
+# server/logs/
+# client/build/
+# backend/dist/
