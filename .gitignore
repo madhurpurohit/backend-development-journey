@@ -4,7 +4,6 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json  # Optional: include if using yarn exclusively
 yarn.lock          # Optional: include if using npm exclusively
 
 # Build Output
