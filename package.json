@@ -1,0 +1,16 @@
+{
+  "name": "backend-development",
+  "version": "1.0.0",
+  "description": "Learn Backend Development",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "author": "Madhur Purohit",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

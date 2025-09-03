@@ -1,3 +1,5 @@
+console.log("Hello I am third");
+
 function multiply(a, b) {
   console.log(`Multiplication of ${a} & ${b} is: ${a * b}`);
 }
