@@ -1,4 +1,6 @@
 const express = require("express");
+const { auth } = require("./middleware/auth");
+
 const app = express();
 
 const foodMenu = [
@@ -27,31 +29,22 @@ const foodMenu = [
 // Convert JSON Body Data into JS Object. It is a middleware.
 app.use(express.json());
 
-app.use("/admin", (req, res, next) => {
-  // Authenticate the user that it is admin or not?. Authentication Middleware. Here we use dummy code not the actual logic.
-  const token = "ABCDEF";
-  const access = token === "ABCDEF";
-
-  if (!access) {
-    res.status(403).send("No Permission");
-  } else {
-    next();
-  }
-});
+// Authentication Middleware.
+// app.use("/admin", auth);
 
 // To send all the data of foodMenu.
-app.get("/admin", (req, res) => {
+app.get("/admin", auth, (req, res) => {
   res.status(200).send(foodMenu);
 });
 
 // To add data into foodMenu.
-app.post("/admin", (req, res) => {
+app.post("/admin", auth, (req, res) => {
   foodMenu.push(req.body);
   res.status(200).send("Data added successfully");
 });
 
 // To delete any food from foodMenu.
-app.delete("/admin/:id", (req, res) => {
+app.delete("/admin/:id", auth, (req, res) => {
   const id = parseInt(req.params.id);
 
   const index = foodMenu.findIndex((item) => item.id === id);
@@ -64,7 +57,7 @@ app.delete("/admin/:id", (req, res) => {
 });
 
 // To update single field.
-app.patch("/admin/:id", (req, res) => {
+app.patch("/admin/:id", auth, (req, res) => {
   const id = parseInt(req.params.id);
   //?   let food = foodMenu.find((item) => item.id === id); // Here because foodMenu is object than it will copy it as an shallow copy, so change in food is also modify the original foodMenu.
   const index = foodMenu.findIndex((item) => item.id === id);
@@ -79,7 +72,7 @@ app.patch("/admin/:id", (req, res) => {
 });
 
 // To update the whole field of food Data.
-app.put("/admin/:id", (req, res) => {
+app.put("/admin/:id", auth, (req, res) => {
   const id = parseInt(req.params.id);
   //?   let food = foodMenu.find((item) => item.id === id); // Here because foodMenu is object than it will copy it as an shallow copy, so change in food is also modify the original foodMenu.
   const index = foodMenu.findIndex((item) => item.id === id);
