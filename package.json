@@ -11,6 +11,7 @@
   "author": "Madhur Purohit",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^4.21.2",
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.1"
