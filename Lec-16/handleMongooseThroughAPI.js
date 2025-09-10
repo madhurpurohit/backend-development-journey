@@ -46,7 +46,7 @@ app.delete("/info", async (req, res) => {
   try {
     const query = {};
     if (req.query.name) query.name = `${req.query.name}`;
-    if (req.query.age) query.age = parseInt(req.query.age);
+    if (req.query.age) query.age = Number(req.query.age);
     if (req.query.city) query.city = `${req.query.city}`;
     if (req.query.gender) query.gender = `${req.query.gender}`;
     // const result = await User.deleteOne(query);
