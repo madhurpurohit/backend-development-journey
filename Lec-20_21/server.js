@@ -5,7 +5,7 @@ const validate = require("./utils/validateUser");
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-const { WriteError } = require("mongodb");
+const userAuth = require("./Middleware/userAuthentication");
 
 const app = express();
 
@@ -39,7 +39,7 @@ app.post("/login", async (req, res) => {
 
     //* How to use JWT.
     const jwtToken = jwt.sign({ email: person.email }, "DevFlux@123", {
-      expiresIn: 100,
+      expiresIn: "10m",
     });
 
     //* How to send cookie.
@@ -52,11 +52,8 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/info", async (req, res) => {
+app.get("/info", userAuth, async (req, res) => {
   try {
-    const payload = jwt.verify(req.cookies.token, "DevFlux@123");
-    // console.log(req.cookies);
-
     const result = await User.find({});
     console.log(req.cookies);
     res.status(200).send(result);
@@ -65,29 +62,33 @@ app.get("/info", async (req, res) => {
   }
 });
 
-app.get("/get", async (req, res) => {
+app.get("/user", userAuth, async (req, res) => {
   try {
     //* How to verify.
-    const payload = jwt.verify(req.cookies.token, "DevFlux@123");
-    console.log(payload);
-    // @ts-ignore
-    const result = await User.findOne({ email: payload.email });
+    // const payload = jwt.verify(req.cookies.token, "DevFlux@123");
+
+    const result = await User.findOne({ email: req.email });
     res.status(200).send(result);
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-app.delete("/info/:id", async (req, res) => {
+app.delete("/info/:id", userAuth, async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.params.id);
-    res.status(200).send("Deleted Successfully");
+    const { id } = req.params;
+    if (id === req._id) {
+      await User.findByIdAndDelete(id);
+      res.status(200).send("Deleted Successfully");
+    } else {
+      throw new Error("You're not the account owner, please login");
+    }
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-app.patch("/info", async (req, res) => {
+app.patch("/info", userAuth, async (req, res) => {
   try {
     const { _id, ...data } = req.body;
     await User.findByIdAndUpdate(_id, data, { runValidators: true });
