@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const userAuth = require("./Middleware/userAuthentication");
+require("dotenv").config();
 
 const app = express();
 
@@ -38,7 +39,7 @@ app.post("/login", async (req, res) => {
     }
 
     //* How to use JWT.
-    const jwtToken = jwt.sign({ email: person.email }, "DevFlux@123", {
+    const jwtToken = jwt.sign({ email: person.email }, process.env.SECRET_KEY, {
       expiresIn: "10m",
     });
 
@@ -101,7 +102,7 @@ app.patch("/info", userAuth, async (req, res) => {
 main()
   .then(() => {
     console.log("Connected to Database");
-    app.listen(4000, () => {
+    app.listen(Number(process.env.PORT), () => {
       console.log("Server is running on port no. 4000");
     });
   })

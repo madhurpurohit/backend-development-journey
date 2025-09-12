@@ -1,10 +1,10 @@
 const { MongoClient } = require("mongodb"); // MongoClient is an class.
+require("dotenv").config();
 // or as an es module:
 // import { MongoClient } from 'mongodb'
 
 // Connection URL
-const url =
-  "mongodb+srv://madhurPurohit:Madhur7610@learnmongodb.mhkz6cu.mongodb.net/"; // Here we write our connection string which we get while creating a cluster.
+const url = `${process.env.DB_SECRET_KEY}/`; // Here we write our connection string which we get while creating a cluster.
 const client = new MongoClient(url); // It will create an object/instance of class MongoClient(url).
 
 // Database Name

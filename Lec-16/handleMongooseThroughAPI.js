@@ -104,7 +104,7 @@ app.put("/info/:name", async (req, res) => {
 main()
   .then(() => {
     console.log("Connected to DB");
-    app.listen(4000, () => {
+    app.listen(Number(process.env.PORT), () => {
       console.log("Server is running on port no. 4000");
     });
   })

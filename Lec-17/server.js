@@ -1,6 +1,7 @@
 const express = require("express");
 const main = require("./mongoose");
 const User = require("./Models/user");
+require("dotenv").config();
 
 const app = express();
 
@@ -56,7 +57,7 @@ app.patch("/info", async (req, res) => {
 main()
   .then(() => {
     console.log("Connected to Database");
-    app.listen(4000, () => {
+    app.listen(Number(process.env.PORT), () => {
       console.log("Server is running on port no. 4000");
     });
   })
