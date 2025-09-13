@@ -35,4 +35,19 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
+//* For logout feature we have total two methods
+authRouter.post("/logout", async (req, res) => {
+  try {
+    //* Method1:- Send a dummy token.
+    // res.cookie("token", "sdgfsaifgkas");
+
+    //* Method2:- Set instant expire on cookie
+    res.cookie("token", null, { expires: new Date(Date.now()) });
+
+    res.status(200).send("Logout Successfully");
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
 module.exports = authRouter;
