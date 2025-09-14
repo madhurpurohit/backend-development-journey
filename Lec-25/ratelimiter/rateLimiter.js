@@ -5,7 +5,7 @@ const rateLimiter = async (req, res, next) => {
     const ip = req.ip;
     // console.log(ip);
 
-    //* Logic to create Ratelimiter.
+    //* Logic to create Sliding Window Ratelimiter.
     const number_of_request = await redisClient.incr(ip); // It will automatically attach count with ip address, & if same ip comes than automatically increment count.
     console.log(number_of_request);
 
