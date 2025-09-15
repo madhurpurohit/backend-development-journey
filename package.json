@@ -11,6 +11,7 @@
   "author": "Madhur Purohit",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^1.19.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.2",
