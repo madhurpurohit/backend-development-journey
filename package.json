@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.1",
+    "readline-sync": "^1.4.10",
     "redis": "^5.8.2",
     "validator": "^13.15.15"
   }
