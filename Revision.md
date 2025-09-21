@@ -208,3 +208,24 @@
 178. What is MCP Server?
 179. What is AI Agent, How to make it?
 180. How to take user input from terminal?
+
+---
+
+## WebSocket, Socket.io & WebRTC
+
+190. What is WebSocket?
+191. History of Internet?
+192. What is Polling & Lon-Polling?
+193. What is HTTP Streaming or server side chunking?
+194. What is Socket.io?
+195. Why use Socket.io instead of plain WebSocket?
+196. What are Trade-offs/Limitation of Socket.io?
+197. How to install Socket.io?
+198. How to create a Socket Server?
+199. How to connect & disconnect with Socket.io?
+200. How to send message to all connected user?
+201. How to serve any file like HTML, CSS or anything from backend?
+202. 
+203. 
+204. 
+205. 

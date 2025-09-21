@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Practice Socket.io</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        color: #fff;
+      }
+      body {
+        width: 100vw;
+        height: 100vh;
+        background: #222;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        overflow: hidden;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 12px;
+      }
+
+      #root {
+        min-width: 70%;
+        max-width: 900px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 20px 40px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      #msgDisplay {
+        flex: 1;
+        overflow-y: auto;
+        max-width: 100%;
+        scrollbar-width: thin;
+        scrollbar-color: #555 #2a2a2a;
+        padding: 0 10px;
+      }
+
+      #roomMsg,
+      #msg {
+        padding: 10px;
+        width: 100%;
+        min-height: 40px;
+        max-height: 150px;
+        background: #3b3b3b;
+        border: none;
+        outline: none;
+        border-radius: 15px;
+        font-size: 20px;
+        letter-spacing: 0.03rem;
+        line-height: 1.5;
+        resize: none;
+        overflow-y: auto;
+      }
+
+      #sendMsg {
+        width: max-content;
+        padding: 9px 18px;
+        display: inline-block;
+        font-weight: 800;
+        border-radius: 20px;
+        background: transparent;
+        transition: all 200ms linear;
+        cursor: pointer;
+
+        &:hover {
+          background: #ccc;
+          color: #000;
+          scale: 0.9;
+        }
+      }
+
+      #input-box {
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        gap: 10px;
+        margin: 12px 0;
+      }
+
+      .text {
+        max-width: 70%;
+        width: max-content;
+        padding: 10px 20px;
+        background: #4b4b4b;
+        color: #fff;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 5px;
+        font-size: 18px;
+        margin-bottom: 10px;
+        overflow-wrap: break-word;
+      }
+
+      .right {
+        margin-left: auto;
+      }
+
+      @media (width<=600px) {
+        #msg,
+        #roomMsg {
+          font-size: 14px;
+        }
+        .text {
+          font-size: 15px;
+        }
+        #sendMsg {
+          font-size: 12px;
+          padding: 6px 12px;
+        }
+        h1 {
+          font-size: 16px;
+        }
+        #input-box {
+          flex-direction: column;
+        }
+      }
+
+      #msgDisplay::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #msgDisplay::-webkit-scrollbar-track {
+        background: #2a2a2a;
+        border-radius: 10px;
+      }
+
+      #msgDisplay::-webkit-scrollbar-thumb {
+        background-color: #555;
+        border-radius: 10px;
+        border: 2px solid #2a2a2a;
+      }
+
+      #msgDisplay::-webkit-scrollbar-thumb:hover {
+        background-color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <h1>Chat App</h1>
+      <div id="input-box">
+        <textarea id="roomMsg" placeholder="Enter Room Number Here"></textarea>
+        <button onclick="joinRoom()" id="sendMsg">Join</button>
+      </div>
+      <div id="msgDisplay"></div>
+      <div id="input-box">
+        <textarea id="msg" placeholder="Type Message Here"></textarea>
+        <button onclick="sendMsg()" id="sendMsg">Send</button>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      //* When socket connection is establish than it will console socket_id.
+      //   socket.on("connect", () => {
+      //     console.log(socket.id);
+      //   });
+
+      const msgBox = document.getElementById("msgDisplay");
+      const msgInput = document.getElementById("msg");
+      const roomNumber = document.getElementById("roomMsg");
+      let room = undefined;
+
+      // function sendMsg() {
+      //   const message = msgInput.value;
+      //   console.log(message);
+      //   socket.emit("message", message);
+      //   const element = document.createElement("div");
+      //   element.textContent = message;
+      //   element.setAttribute("class", "text right");
+      //   msgBox.append(element);
+      //   msgInput.value = "";
+      // }
+
+      function scrollToBottom() {
+        msgBox.scrollTop = msgBox.scrollHeight;
+      }
+
+      function sendMsg() {
+        const message = msgInput.value.trim();
+        if (message.trim() === "") return;
+        socket.emit("message", { room, msg: message });
+        const element = document.createElement("div");
+        element.textContent = message;
+        element.setAttribute("class", "text right");
+        msgBox.append(element);
+        msgInput.value = "";
+
+        scrollToBottom();
+      }
+
+      function joinRoom() {
+        const roomId = roomNumber.value;
+        if (roomId.trim() === "") return;
+        room = roomId;
+        socket.emit("join-room", room);
+        roomNumber.value = "";
+      }
+
+      socket.on("new-message", (data) => {
+        const element = document.createElement("div");
+        element.textContent = data;
+        element.setAttribute("class", "text");
+        msgBox.append(element);
+
+        scrollToBottom();
+      });
+    </script>
+  </body>
+</html>

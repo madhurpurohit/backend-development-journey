@@ -101,3 +101,9 @@ npm i readline-sync
 ```
 npm i socket.io
 ```
+
+## Path
+
+```
+npm i path
+```
