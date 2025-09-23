@@ -2,6 +2,7 @@
   "name": "backend-development",
   "version": "1.0.0",
   "description": "Learn Backend Development",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,6 +14,7 @@
   "dependencies": {
     "@google/genai": "^1.19.0",
     "bcrypt": "^6.0.0",
+    "chalk": "^4.1.2",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.2",
     "express": "^4.21.2",
