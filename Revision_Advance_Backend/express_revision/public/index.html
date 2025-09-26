@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="container">
+      <h1>URL Shortener</h1>
+      <form id="shorten-form" action="/contact" method="POST">
+        <div class="input-div">
+          <label for="username">Full Name:</label>
+          <!-- <input
+            type="text"
+            name="username"
+            id="username"
+            placeholder="Enter URL Here"
+            required
+          /> -->
+          <input
+            type="text"
+            name="user[name]"
+            id="username"
+            placeholder="Enter URL Here"
+            required
+          />
+        </div>
+        <div class="input-div">
+          <label for="message">Message:</label>
+          <!-- <textarea
+            name="message"
+            id="message"
+            rows="2"
+            cols="20"
+            placeholder="Write your message here."
+            required
+          ></textarea> -->
+          <textarea
+            name="user[message]"
+            id="message"
+            rows="2"
+            cols="20"
+            placeholder="Write your message here."
+            required
+          ></textarea>
+        </div>
+        <button type="submit">Shorten</button>
+      </form>
+    </div>
+  </body>
+</html>

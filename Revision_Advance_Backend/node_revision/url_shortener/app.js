@@ -22,7 +22,7 @@ const loadLinks = async () => {
     const data = await readFile(DATA_FILE, "utf-8");
     return JSON.parse(data);
   } catch (error) {
-    //* It means file is not existed or present in the folder.
+    //* It means file is not existed or present in the folder. ENOENT stands for "no such file or directory".
     if (error.code === "ENOENT") {
       await writeFile(DATA_FILE, JSON.stringify({}));
       return {};
@@ -85,7 +85,7 @@ const server = createServer(async (req, res) => {
       links[finalShortCode] = url;
       await writeFile(DATA_FILE, JSON.stringify(links));
       res.writeHead(200, { "Content-Type": "application/plain" });
-      res.end(finalShortCode);
+      return res.end(finalShortCode);
     });
   }
 });

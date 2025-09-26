@@ -107,3 +107,9 @@ npm i socket.io
 ```
 npm i path
 ```
+
+## Zod
+
+```
+npm i zod
+```
