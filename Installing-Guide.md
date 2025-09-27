@@ -113,3 +113,9 @@ npm i path
 ```
 npm i zod
 ```
+
+## EJS Template Engine
+
+```
+npm i ejs
+```

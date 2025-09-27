@@ -1,0 +1,17 @@
+1 File ---> 2 File
+
+MVP roadmap (day-by-day short plan)
+
+Week 0 (plan): define minimal features: signup/login, send/receive text, IndexedDB storage, server storing encrypted blobs, simple symmetric encryption.
+
+Week 1: Build backend (Auth, store encrypted messages) + simple client sending plaintext (for dev) — WebSocket or REST for delivery.
+
+Week 2: Add IndexedDB local storage, show message history.
+
+Week 3: Implement client-side crypto (Web Crypto) for encryption/decryption; ensure server stores only ciphertext.
+
+Week 4: Implement contact public key registry on server (upload public keys), key exchange (ECDH). Test message encryption.
+
+Week 5: Implement simple device linking by QR and transfer of keys (for web companion).
+
+Week 6+: Migrate to Signal Protocol (libsignal), add group messaging, backups, and (optional) WebRTC calls with STUN/TURN.
