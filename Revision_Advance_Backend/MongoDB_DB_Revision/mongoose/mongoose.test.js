@@ -13,21 +13,46 @@ try {
 }
 
 //* Step2:- Create a Schema.
-const userSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
+//* Method1:- Syntax:- const vName = mongoose.Schema({data});
+// const userSchema = mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: true,
+//   },
+//   email: {
+//     type: String,
+//     required: true,
+//     unique: true,
+//   },
+//   age: {
+//     type: Number,
+//     required: true,
+//   },
+//   Timestamp: {
+//     type: Date,
+//     default: Date.now,
+//   },
+// });
+
+//* Method2:- Syntax:- const vName = new mongoose.Schema({data}); OR const vName = new mongoose.Schema({data}, {options});
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    age: {
+      type: Number,
+      required: true,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  age: {
-    type: Number,
-    required: true,
-  },
-});
+  { timestamps: true } // It automatically adds createdAt & updatedAT key & value as time in which the operation is perform.
+);
 
 //* Step3:- Create a Model.
 const User = mongoose.model("User", userSchema, "user");
@@ -44,7 +69,7 @@ const User = mongoose.model("User", userSchema, "user");
 //todo Method2:- Syntax:- await ModelName.create({data});
 await User.create({
   name: "DevFlux",
-  email: "dev.flux@gmail.com",
+  email: "dev.flux1@gmail.com",
   age: 25,
 });
 
