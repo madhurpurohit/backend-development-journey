@@ -301,3 +301,16 @@ const deletedUsers = await prisma.user.deleteMany({
 
 console.log(`${deletedUsers.count} users deleted`);
 ```
+
+---
+
+# String Mapping in MySQL By Prisma
+
+| Prisma Type               | MySQL Default               | Notes                                             |
+| ------------------------- | --------------------------- | ------------------------------------------------- |
+| `String`                  | `VARCHAR(191)` (by default) | Index ke liye safe limit rakhta hai               |
+| `String @db.VarChar(500)` | `VARCHAR(500)`              | Tum manually size define kar sakte ho             |
+| `String @db.Text`         | `TEXT`                      | ~65,535 characters tak store ho sakte hain        |
+| `String @db.LongText`     | `LONGTEXT`                  | ~4 GB tak ka text store ho sakta hai (bahut bada) |
+
+---
