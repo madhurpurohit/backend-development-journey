@@ -1,5 +1,6 @@
-import z from "zod";
+import { z } from "zod";
 import "dotenv/config";
+console.log(process.env);
 
 export const envSchema = z
   .object({
