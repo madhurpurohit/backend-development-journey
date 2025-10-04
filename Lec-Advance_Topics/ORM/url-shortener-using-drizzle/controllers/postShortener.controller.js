@@ -44,6 +44,7 @@ export const addShortener = async (req, res) => {
     }
 
     await addShortenerLinks({ shortCode: finalShortCode, url });
+
     return res.redirect("/");
   } catch (error) {
     console.error(error);
@@ -61,7 +62,7 @@ export const linkShortener = async (req, res) => {
       return res.status(404).send("Short Code not found");
     }
 
-    return res.redirect(links.url);
+    return res.redirect(links[0].url);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
