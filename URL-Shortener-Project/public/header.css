@@ -1,0 +1,78 @@
+@import url(https://fonts.googleapis.com/css?family=Urbanist:100,200,300,regular,500,600,700,800,900);
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Urbanist", sans-serif;
+}
+
+:root {
+  --header-background: #fdfdfd;
+  --logo-color: #555;
+  --text-color: #111;
+  --text-hover-color: #6e6e6e;
+  --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --header-background: #313131;
+    --logo-color: #a0a0a0;
+    --text-color: #fff;
+    --text-hover-color: #d4d4d4;
+    --box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+  }
+}
+
+.navigation-menu {
+  width: 100%;
+  background-color: var(--header-background);
+  box-shadow: var(--box-shadow);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+header {
+  max-width: 1400px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+}
+
+nav ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  background: transparent;
+  font-size: 17px;
+
+  & a {
+    color: var(--text-color);
+    text-decoration: none;
+    letter-spacing: 0.8px;
+  }
+
+  & li {
+    cursor: pointer;
+    transition: color 150ms linear;
+
+    &:hover {
+      color: var(--text-hover-color);
+    }
+  }
+}
+
+.navigation-menu h1 {
+  margin: 0;
+  padding: 0;
+  color: var(--logo-color);
+  font-size: 32px;
+}
