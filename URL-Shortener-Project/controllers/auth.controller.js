@@ -1,12 +1,11 @@
 //* EJS by default search in views folder.
-import { compare } from "bcrypt";
 import {
   comparePassword,
   createUser,
+  generateToken,
   getHashedPassword,
   getUserByEmail,
 } from "../services/auth.services.js";
-import { is } from "drizzle-orm";
 
 export const getRegisterPage = (req, res) => {
   res.render("auth/register");
@@ -37,7 +36,13 @@ export const postLogin = async (req, res) => {
     return res.status(500).send("Password does not match");
   }
 
-  res.cookie("isLoggedIn", true);
+  const token = generateToken({
+    id: userExists.id,
+    name: userExists.name,
+    email: userExists.email,
+  });
+
+  res.cookie("access_token", token);
   res.redirect("/");
 };
 
