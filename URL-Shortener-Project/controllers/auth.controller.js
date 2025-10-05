@@ -10,13 +10,13 @@ import {
 export const getRegisterPage = (req, res) => {
   if (req.user) return res.redirect("/");
 
-  res.render("auth/register");
+  res.render("auth/register", { errors: req.flash("errors") });
 };
 
 export const getLoginPage = (req, res) => {
   if (req.user) return res.redirect("/");
 
-  res.render("../views/auth/login");
+  res.render("../views/auth/login", { errors: req.flash("errors") });
 };
 
 export const postLogin = async (req, res) => {
@@ -33,13 +33,15 @@ export const postLogin = async (req, res) => {
   // console.log(userExists);
 
   if (!userExists) {
-    return res.status(500).send("User does not exist");
+    req.flash("errors", "Invalid Email or Password");
+    return res.redirect("/login");
   }
 
   const isPasswordMatch = await comparePassword(password, userExists.password);
 
   if (!isPasswordMatch) {
-    return res.status(500).send("Password does not match");
+    req.flash("errors", "Invalid Email or Password");
+    return res.redirect("/login");
   }
 
   const token = generateToken({
@@ -62,7 +64,8 @@ export const postRegister = async (req, res) => {
   // console.log(userExists);
 
   if (userExists) {
-    return res.status(500).send("User already exists");
+    req.flash("errors", "Email already exists");
+    return res.redirect("/register");
   }
 
   const hashPassword = await getHashedPassword(password);

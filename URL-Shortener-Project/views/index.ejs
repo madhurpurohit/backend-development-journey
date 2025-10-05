@@ -4,17 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>URL Shortener</title>
+
+    <!-- ZMDI Material Design Iconic Font CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css"
+    />
+
     <link rel="icon" type="image/svg+xml" href="/images/Logo.png" />
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <%- include("partials/header.ejs") %> <% if(user) { %>
-    <h2>You are logged In</h2>
-    <% } else { %>
-    <h2>You are not logged In</h2>
-    <% } %>
+    <%- include("partials/header.ejs") %>
 
     <div id="container">
+      <% if(user) { %>
+      <div class="status-badge success">
+        <i class="zmdi zmdi-check-circle"></i>
+        <span>You are logged In</span>
+      </div>
+      <% } else { %>
+      <div class="status-badge warning">
+        <i class="zmdi zmdi-alert-circle"></i>
+        <span>You are not logged In</span>
+      </div>
+      <% } %>
+
       <h1>URL Shortener</h1>
       <form action="/" method="post">
         <div class="input-div">

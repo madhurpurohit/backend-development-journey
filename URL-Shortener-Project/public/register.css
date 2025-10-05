@@ -11,6 +11,7 @@
   --social-icon-facebook: #3b5998;
   --social-icon-twitter: #55acee;
   --social-icon-google: #dd4b39;
+  --error: #ef4444;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -130,6 +131,16 @@ body {
   justify-content: space-between;
   align-items: center;
   font-size: 0.9rem;
+}
+
+.flash-error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left: 0.3rem solid var(--error);
+  color: var(--error);
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 1.2rem;
+  border-radius: 0.2rem;
+  font-size: 0.8rem;
 }
 
 .login-link a {

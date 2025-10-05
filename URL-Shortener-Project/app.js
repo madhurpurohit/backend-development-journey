@@ -5,6 +5,8 @@ import { envSchema } from "./config/env.js";
 import { authRoutes } from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import { verifyAuthentication } from "./middlewares/varify-auth.middleware.js";
+import session from "express-session";
+import flash from "connect-flash";
 
 const app = express();
 
@@ -15,6 +17,10 @@ app.use(express.urlencoded({ extended: true }));
 
 //* How to parse cookie.
 app.use(cookieParser());
+
+//* How to save session using express-session?
+app.use(session({ secret: "Madhur", resave: true, saveUninitialized: false }));
+app.use(flash());
 
 //* Add middleware where we can check that user is logged in or not.
 app.use(verifyAuthentication);

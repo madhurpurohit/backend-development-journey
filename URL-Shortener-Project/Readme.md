@@ -32,6 +32,9 @@ In this resave means in each request we want to save this. & savUninitialized me
 **Syntax:**
 
 ```js
+import flash from "connect-flash";
+app.use(flash());
+
 req.flash("key", "Value");
 ```
 
@@ -48,7 +51,7 @@ req.flash("errors", "User already exists");
 **Syntax:**
 
 ```js
-ree.flash("key");
+req.flash("key");
 ```
 
 **Example:**

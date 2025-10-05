@@ -47,6 +47,11 @@
               required
             />
           </div>
+
+          <% if(errors && errors.length>0){ %> <% errors.forEach((error) => { %>
+          <p class="flash-error"><%= error %></p>
+          <% }) %> <% } %>
+
           <div class="remember-me">
             <input type="checkbox" id="remember" />
             <label for="remember">Remember me</label>
