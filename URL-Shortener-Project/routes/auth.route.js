@@ -4,6 +4,7 @@ import * as authController from "../controllers/auth.controller.js";
 const router = Router();
 
 // router.get("/register", authController.getRegisterPage);
+// router.get("/register", authController.postRegister);
 
 // router.get("/login", authController.getLoginPage);
 // router.post("/login", authController.postLogin);
@@ -18,5 +19,8 @@ router
   .route("/login")
   .get(authController.getLoginPage)
   .post(authController.postLogin);
+
+router.route("/me").get(authController.getMe);
+router.route("/logout").get(authController.logoutUser);
 
 export const authRoutes = router;

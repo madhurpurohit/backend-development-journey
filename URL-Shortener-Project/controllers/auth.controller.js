@@ -8,14 +8,20 @@ import {
 } from "../services/auth.services.js";
 
 export const getRegisterPage = (req, res) => {
+  if (req.user) return res.redirect("/");
+
   res.render("auth/register");
 };
 
 export const getLoginPage = (req, res) => {
+  if (req.user) return res.redirect("/");
+
   res.render("../views/auth/login");
 };
 
 export const postLogin = async (req, res) => {
+  if (req.user) return res.redirect("/");
+
   //* How to Set Cookie in Normal Ways.
   // res.setHeader("Set-Cookie", "isLoggedIn=true; path=/;");
 
@@ -47,6 +53,8 @@ export const postLogin = async (req, res) => {
 };
 
 export const postRegister = async (req, res) => {
+  if (req.user) return res.redirect("/");
+
   // console.log(req.body);
   const { name, email, password } = req.body;
 
@@ -67,3 +75,14 @@ export const postRegister = async (req, res) => {
 
 //! Do you need to set path=/ while using cookieParser?
 //* Cookie-Parser & Express automatically set the path to / by default.
+
+//* Protected Route.
+export const getMe = (req, res) => {
+  if (!req.user) return res.redirect("/login");
+  return res.send(`<h1>Hey ${req.user.name} - ${req.user.email}</h1>`);
+};
+
+export const logoutUser = (req, res) => {
+  res.clearCookie("access_token");
+  res.redirect("/login");
+};
