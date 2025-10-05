@@ -5,7 +5,7 @@ import {
   addShortenerLinks,
   checkShortCode,
   loadLinks,
-} from "../services/drizzle.js";
+} from "../services/drizzle.services.js";
 
 export const getShortenerPage = async (req, res) => {
   try {

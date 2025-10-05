@@ -26,11 +26,12 @@
 
       <div class="card-right">
         <h1>Create Account</h1>
-        <form>
+        <form action="/register" method="post">
           <div class="form-group">
             <input
               type="text"
               id="name"
+              name="name"
               class="form-input"
               placeholder="Your Name"
               required
@@ -40,6 +41,7 @@
             <input
               type="email"
               id="email"
+              name="email"
               class="form-input"
               placeholder="Email Address"
               required
@@ -49,6 +51,7 @@
             <input
               type="password"
               id="password"
+              name="password"
               class="form-input"
               placeholder="Password"
               required
@@ -58,6 +61,7 @@
             <input
               type="password"
               id="confirm-password"
+              name="confirm-password"
               class="form-input"
               placeholder="Confirm Password"
               required
