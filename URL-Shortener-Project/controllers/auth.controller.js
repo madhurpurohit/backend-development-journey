@@ -6,6 +6,10 @@ import {
   getHashedPassword,
   getUserByEmail,
 } from "../services/auth.services.js";
+import {
+  loginUserSchema,
+  registerUserSchema,
+} from "../validation/auth.validation.js";
 
 export const getRegisterPage = (req, res) => {
   if (req.user) return res.redirect("/");
@@ -27,7 +31,18 @@ export const postLogin = async (req, res) => {
 
   //* How to set cookie using cookie-parser.
   // res.cookie("isLoggedIn", true);
-  const { email, password } = req.body;
+  // const { email, password } = req.body;
+
+  //* Validate user input.
+  const validateResult = loginUserSchema.safeParse(req.body);
+
+  if (validateResult.success === false) {
+    const errors = validateResult.error.issues[0].message;
+    req.flash("errors", errors);
+    return res.redirect("/login");
+  }
+
+  const { email, password } = data;
 
   const userExists = await getUserByEmail(email);
   // console.log(userExists);
@@ -58,7 +73,21 @@ export const postRegister = async (req, res) => {
   if (req.user) return res.redirect("/");
 
   // console.log(req.body);
-  const { name, email, password } = req.body;
+  // const { name, email, password } = req.body;
+  console.log("Request Body: ", req.body);
+
+  //* Validate user input.
+  const validateResult = registerUserSchema.safeParse(req.body);
+  // console.log("Result: ", validateResult);
+  // console.log("Data: ", validateResult?.data);
+
+  if (validateResult.success === false) {
+    const errors = validateResult.error.issues[0].message;
+    req.flash("errors", errors);
+    return res.redirect("/register");
+  }
+
+  const { name, email, password } = validateResult?.data;
 
   const userExists = await getUserByEmail(email);
   // console.log(userExists);
