@@ -163,6 +163,11 @@ body {
   margin-top: 20px;
 }
 
+#container .no-urls {
+  text-align: center;
+  opacity: 0.7;
+}
+
 #container ul {
   margin-top: 20px;
   display: flex;

@@ -57,14 +57,16 @@
 
       <h2>Shortened URLs:</h2>
       <ul>
-        <% links.forEach((link) => { %>
+        <% if(links.length>0) {%> <% links.forEach((link) => { %>
         <li>
           <a href="/<%= link.shortCode %>"
             ><%= `http://${host}/${link.shortCode}` %></a
           >
           - <%= link.url %>
         </li>
-        <% }) %>
+        <% }) %> <% } else { %>
+        <p class="no-urls">No URLs have been shortened yet.</p>
+        <% } %>
       </ul>
     </div>
 

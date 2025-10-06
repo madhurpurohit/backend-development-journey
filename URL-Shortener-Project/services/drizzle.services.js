@@ -1,25 +1,29 @@
 import { eq } from "drizzle-orm";
 import { db } from "../config/db.js";
-import { shortLinks } from "../drizzle/schema.js";
+import { shortLinksTable } from "../drizzle/schema.js";
 
-export const loadLinks = async () => {
-  const links = await db.select().from(shortLinks);
+export const loadLinks = async (userId) => {
+  const links = await db
+    .select()
+    .from(shortLinksTable)
+    .where(eq(shortLinksTable.userId, userId));
   return links;
 };
 
 export const checkShortCode = async (finalShortCode) => {
   const isPresent = await db
     .select()
-    .from(shortLinks)
-    .where(eq(shortLinks.shortCode, finalShortCode));
+    .from(shortLinksTable)
+    .where(eq(shortLinksTable.shortCode, finalShortCode));
 
   return isPresent;
 };
 
-export const addShortenerLinks = async ({ shortCode, url }) => {
-  const addShortCode = await db.insert(shortLinks).values({
+export const addShortenerLinks = async ({ shortCode, url, userId }) => {
+  const addShortCode = await db.insert(shortLinksTable).values({
     shortCode,
     url,
+    userId,
   });
   // console.log(addShortCode);
 

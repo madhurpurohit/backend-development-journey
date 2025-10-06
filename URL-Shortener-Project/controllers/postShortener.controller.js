@@ -1,5 +1,3 @@
-import path from "path";
-import fs from "fs/promises";
 import crypto from "crypto";
 import {
   addShortenerLinks,
@@ -9,7 +7,9 @@ import {
 
 export const getShortenerPage = async (req, res) => {
   try {
-    const links = await loadLinks();
+    if (!req.user) return res.redirect("/login");
+
+    const links = await loadLinks(req.user.id);
 
     //* How to get cookies in Normal Methods?
     // let isLoggedIn = req.headers.cookie;
@@ -40,7 +40,11 @@ export const addShortener = async (req, res) => {
       return res.status(400).send("Short Code already taken");
     }
 
-    await addShortenerLinks({ shortCode: finalShortCode, url });
+    await addShortenerLinks({
+      shortCode: finalShortCode,
+      url,
+      userId: req.user.id,
+    });
 
     return res.redirect("/");
   } catch (error) {
