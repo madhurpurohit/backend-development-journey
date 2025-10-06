@@ -20,10 +20,15 @@
   --button-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   --url-background: #f5f5f5;
-  --url-color: #1ce6e9;
-  --url-hover-color: #25bcbf;
+  --url-color: #c31ce9;
+  --url-hover-color: #0011ff;
   --success: #10b981;
   --warning: #f59e0b;
+  --delete-option: #ff2828;
+  --copy-btn: #222;
+  --edit-btn: #00ff26e6;
+  --links-background: #e7e7e7;
+  --error: #ef4444;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,6 +45,10 @@
     --box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
     --button-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
     --url-background: #222;
+    --url-color: #1ce6e9;
+    --url-hover-color: #25bcbf;
+    --copy-btn: #fff;
+    --links-background: #393939;
   }
 }
 
@@ -128,7 +137,7 @@ body {
   -o-border-radius: 5px;
 }
 
-#container button {
+#container > form > button {
   padding: 10px;
   font-size: 16px;
   font-weight: 700;
@@ -152,7 +161,7 @@ body {
   box-shadow: var(--button-shadow);
 }
 
-#container button:hover {
+#container > form > button:hover {
   background-color: var(--button-hover-background);
   color: var(--button-hover-text-color);
   border: 1px solid var(--button-hover-border);
@@ -174,7 +183,7 @@ body {
   flex-direction: column;
   gap: 15px;
   max-height: 300px;
-  padding: 20px 40px;
+  padding: 20px;
   overflow-y: auto;
   background: var(--url-background);
   border-radius: 10px;
@@ -184,11 +193,26 @@ body {
   -o-border-radius: 10px;
 }
 
-#container ul > li {
+#container .links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--links-background);
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: opacity 200ms linear;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+#container ul li {
+  width: 85%;
   list-style: none;
   display: flex;
   flex-direction: column;
-  text-align: center;
+  text-align: left;
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -200,7 +224,16 @@ body {
   hyphens: auto;
 }
 
-#container ul > li > a {
+#container ul li > span {
+  width: 100%;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+#container ul li > a {
   text-decoration: none;
   color: var(--url-color);
   transition: all 0.3s ease;
@@ -212,7 +245,7 @@ body {
   font-size: 17px;
 }
 
-#container ul > li > a:hover {
+#container ul li > a:hover {
   color: var(--url-hover-color);
 }
 
@@ -233,4 +266,55 @@ body {
 
 #container ul::-webkit-scrollbar-thumb:hover {
   background-color: #888;
+}
+
+.zmdi {
+  cursor: pointer;
+  font-size: 18px;
+  transition: opacity 180ms linear;
+}
+
+.zmdi:hover {
+  opacity: 0.6;
+}
+
+.url-option > form > button {
+  color: var(--delete-option);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.copy-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--copy-btn);
+}
+
+.url-option {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 15px;
+  margin-left: 10px;
+}
+
+.flash-error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left: 0.3rem solid var(--error);
+  color: var(--error);
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 1.2rem;
+  border-radius: 0.2rem;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.url-update a {
+  text-decoration: none;
+
+  & i {
+    color: var(--edit-btn);
+  }
 }

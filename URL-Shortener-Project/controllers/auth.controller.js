@@ -42,7 +42,7 @@ export const postLogin = async (req, res) => {
     return res.redirect("/login");
   }
 
-  const { email, password } = data;
+  const { email, password } = validateResult?.data;
 
   const userExists = await getUserByEmail(email);
   // console.log(userExists);

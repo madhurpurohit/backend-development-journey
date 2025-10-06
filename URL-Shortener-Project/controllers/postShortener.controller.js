@@ -2,8 +2,13 @@ import crypto from "crypto";
 import {
   addShortenerLinks,
   checkShortCode,
+  deleteShortLinkById,
+  findShortLinkById,
   loadLinks,
+  updateShortCode,
 } from "../services/drizzle.services.js";
+import z from "zod";
+import { shortenerSchema } from "../validation/shortener.validator.js";
 
 export const getShortenerPage = async (req, res) => {
   try {
@@ -21,9 +26,12 @@ export const getShortenerPage = async (req, res) => {
     // );
 
     //* How to get cookie while using cookie-parser?
-    const { isLoggedIn } = req.cookies;
-
-    return res.render("index", { links, host: res.host, isLoggedIn });
+    // const { isLoggedIn } = req.cookies;
+    return res.render("index", {
+      links,
+      host: req.hostname,
+      errors: req.flash("errors"),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -39,7 +47,11 @@ export const addShortener = async (req, res) => {
     const link = await checkShortCode(finalShortCode);
 
     if (link?.length > 0) {
-      return res.status(400).send("Short Code already taken");
+      req.flash(
+        "errors",
+        "URL with that shortcode already exists. Please choose another."
+      );
+      return res.redirect("/");
     }
 
     await addShortenerLinks({
@@ -68,5 +80,83 @@ export const linkShortener = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
+  }
+};
+
+export const getShortenerEditPage = async (req, res) => {
+  if (!req.user) return res.redirect("/login");
+
+  const { data: id, error } = z.coerce.number().int().safeParse(req.params.id);
+
+  if (error) return res.redirect("/404");
+
+  try {
+    const shortLink = await findShortLinkById(id);
+
+    if (!shortLink) return res.redirect("/404");
+
+    res.render("edit-shortLink", {
+      id: shortLink.id,
+      url: shortLink.url,
+      shortCode: shortLink.shortCode,
+      errors: req.flash("errors"),
+    });
+  } catch (error) {
+    return res.status(500).send("Internal server error.");
+  }
+};
+
+export const postShortenerEditPage = async (req, res) => {
+  if (!req.user) return res.redirect("/login");
+
+  const { data: id, error } = z.coerce.number().int().safeParse(req.params.id);
+
+  if (error) return res.redirect("/404");
+
+  try {
+    const { data, error } = shortenerSchema.safeParse(req.body);
+
+    if (error) {
+      req.flash("errors", error.message);
+      return res.redirect(`/edit/${id}`);
+    }
+
+    const newUpdateShortCode = await updateShortCode({
+      id,
+      url: data.url,
+      shortCode: data.shortCode,
+    });
+
+    if (!newUpdateShortCode.changedRows) {
+      req.flash("errors", "Short Code already exists. Please choose another.");
+      return res.redirect(`/edit/${id}`);
+    }
+
+    console.log(newUpdateShortCode);
+    res.redirect("/");
+  } catch (error) {
+    // console.log("\nError:\n\n", error);
+    // console.log("\nError:\n\n", error.cause.code);
+    if (error.cause.code === "ER_DUP_ENTRY") {
+      req.flash("errors", "Short Code already exists. Please choose another.");
+      return res.redirect(`/edit/${id}`);
+    }
+    return res.status(500).send("Internal server error.");
+  }
+};
+
+export const deleteShortenerLink = async (req, res) => {
+  if (!req.user) return res.redirect("/login");
+
+  const { data: id, error } = z.coerce.number().int().safeParse(req.params.id);
+
+  // if (error) return res.redirect("/404");
+  if (error) return res.send("Id is not valid");
+
+  try {
+    await deleteShortLinkById(id);
+    res.redirect("/");
+  } catch (error) {
+    return res.status(500).send("Internal server error.");
   }
 };
