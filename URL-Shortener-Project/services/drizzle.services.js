@@ -1,7 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../config/db.js";
 import { shortLinksTable } from "../drizzle/schema.js";
-import { error } from "console";
 
 export const loadLinks = async (userId) => {
   const links = await db

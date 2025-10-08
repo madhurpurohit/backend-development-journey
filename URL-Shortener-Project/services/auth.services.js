@@ -5,7 +5,7 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
-import { sessionTable, userTable } from "../drizzle/schema.js";
+import { sessionTable, shortLinksTable, userTable } from "../drizzle/schema.js";
 import {
   ACCESS_TOKEN_EXPIRY,
   MILLISECONDS_PER_SECOND,
@@ -71,7 +71,7 @@ export const verifyJWTToken = (token) => {
   return jwt.verify(token, process.env.SECRET_KEY);
 };
 
-const findSessionById = async (sessionId) => {
+export const findSessionById = async (sessionId) => {
   const [session] = await db
     .select()
     .from(sessionTable)
@@ -80,7 +80,7 @@ const findSessionById = async (sessionId) => {
   return session;
 };
 
-const findUserById = async (userId) => {
+export const findUserById = async (userId) => {
   const [user] = await db
     .select()
     .from(userTable)
@@ -158,4 +158,11 @@ export const authenticateUser = async ({ req, res, user, name, email }) => {
     ...baseConfig,
     maxAge: REFRESH_TOKEN_EXPIRY,
   });
+};
+
+export const getAllShortLinks = async (userId) => {
+  return await db
+    .select()
+    .from(shortLinksTable)
+    .where(eq(shortLinksTable.userId, userId));
 };

@@ -4,6 +4,8 @@ import {
   clearUserSession,
   comparePassword,
   createUser,
+  findUserById,
+  getAllShortLinks,
   // generateToken,
   getHashedPassword,
   getUserByEmail,
@@ -127,4 +129,24 @@ export const logoutUser = async (req, res) => {
   res.clearCookie("access_token");
   res.clearCookie("refresh_token");
   res.redirect("/login");
+};
+
+export const getProfilePage = async (req, res) => {
+  if (!req.user) return res.redirect("/login");
+
+  const user = await findUserById(req.user.id);
+
+  if (!user) return res.redirect("/login");
+
+  const userShortLinks = await getAllShortLinks(user.id);
+
+  return res.render("auth/profile", {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      links: userShortLinks,
+    },
+  });
 };
