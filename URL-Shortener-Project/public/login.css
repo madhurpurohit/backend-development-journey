@@ -222,3 +222,10 @@ body {
     font-size: 2rem;
   }
 }
+
+@media (max-width: 470px) {
+  .card-footer {
+    flex-direction: column;
+    gap: 15px;
+  }
+}

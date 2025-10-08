@@ -53,21 +53,21 @@ nav ul {
   gap: 20px;
   background: transparent;
   font-size: 17px;
+}
 
-  & a {
-    color: var(--text-color);
-    text-decoration: none;
-    letter-spacing: 0.8px;
-  }
+nav ul a {
+  color: var(--text-color);
+  text-decoration: none;
+  letter-spacing: 0.8px;
+}
 
-  & li {
-    cursor: pointer;
-    transition: color 150ms linear;
+nav ul li {
+  cursor: pointer;
+  transition: color 150ms linear;
+}
 
-    &:hover {
-      color: var(--text-hover-color);
-    }
-  }
+nav ul li:hover {
+  color: var(--text-hover-color);
 }
 
 .navigation-menu h1 {
@@ -75,4 +75,79 @@ nav ul {
   padding: 0;
   color: var(--logo-color);
   font-size: 32px;
+}
+
+/* Hamburger Menu Icon */
+.hamburger {
+  display: none;
+  cursor: pointer;
+  z-index: 1001; /* Should be on top of the menu overlay */
+}
+
+.hamburger .bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  transition: all 0.3s ease-in-out;
+  background-color: var(--text-color);
+  border-radius: 2px;
+}
+
+/* Responsive styles for screens smaller than 640px */
+@media screen and (max-width: 640px) {
+  .hamburger {
+    display: block;
+  }
+
+  nav ul {
+    position: fixed;
+    right: -100%; /* Start off-screen */
+    top: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 65%; /* Menu width */
+    height: 100vh;
+    text-align: center;
+    transition: right 0.4s ease-in-out;
+    gap: 30px;
+    font-size: 20px;
+
+    /* Light Mode Glassmorphism */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  nav ul.active {
+    right: 0; /* Slide in */
+  }
+
+  /* Hamburger to 'X' animation */
+  .hamburger.active .bar:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  .hamburger.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .hamburger.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+}
+
+/* Dark mode specific glassmorphism for better visibility */
+@media (prefers-color-scheme: dark) {
+  @media screen and (max-width: 640px) {
+    nav ul {
+      background: rgba(30, 30, 30, 0.25);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
 }

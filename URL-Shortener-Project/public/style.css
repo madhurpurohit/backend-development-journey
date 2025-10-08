@@ -22,6 +22,9 @@
   --url-background: #f5f5f5;
   --url-color: #c31ce9;
   --url-hover-color: #0011ff;
+  --scrollbar-track-bg: #e7e7e7;
+  --scrollbar-thumb-bg: #ccc;
+  --scrollbar-thumb-hover-bg: #aaa;
   --success: #10b981;
   --warning: #f59e0b;
   --delete-option: #ff2828;
@@ -47,6 +50,9 @@
     --url-background: #222;
     --url-color: #1ce6e9;
     --url-hover-color: #25bcbf;
+    --scrollbar-track-bg: #2a2a2a;
+    --scrollbar-thumb-bg: #555;
+    --scrollbar-thumb-hover-bg: #888;
     --copy-btn: #fff;
     --links-background: #393939;
   }
@@ -102,7 +108,7 @@ body {
 }
 
 #container h1 {
-  font-size: 27px;
+  font-size: 1.7rem;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -120,13 +126,13 @@ body {
 }
 
 #container label {
-  font-size: 17px;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
 #container input {
   padding: 10px;
-  font-size: 16px;
+  font-size: 1rem;
   border: 1px solid #ccc;
   letter-spacing: 0.5px;
   outline: none;
@@ -139,7 +145,7 @@ body {
 
 #container > form > button {
   padding: 10px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.5px;
   outline: none;
@@ -242,11 +248,7 @@ body {
   -ms-transition: all 0.3s ease;
   -o-transition: all 0.3s ease;
   cursor: pointer;
-  font-size: 17px;
-}
-
-#container ul li > a:hover {
-  color: var(--url-hover-color);
+  font-size: 1.1rem;
 }
 
 #container ul::-webkit-scrollbar {
@@ -254,23 +256,23 @@ body {
 }
 
 #container ul::-webkit-scrollbar-track {
-  background: #2a2a2a;
+  background: var(--scrollbar-track-bg);
   border-radius: 10px;
 }
 
 #container ul::-webkit-scrollbar-thumb {
-  background-color: #555;
+  background-color: var(--scrollbar-thumb-bg);
   border-radius: 10px;
-  border: 2px solid #2a2a2a;
+  border: 2px solid var(--scrollbar-track-bg);
 }
 
 #container ul::-webkit-scrollbar-thumb:hover {
-  background-color: #888;
+  background-color: var(--scrollbar-thumb-hover-bg);
 }
 
 .zmdi {
   cursor: pointer;
-  font-size: 18px;
+  font-size: 1.2rem;
   transition: opacity 180ms linear;
 }
 
@@ -316,5 +318,24 @@ body {
 
   & i {
     color: var(--edit-btn);
+  }
+}
+
+@media (max-width: 760px) {
+  html {
+    font-size: 14px;
+  }
+
+  #container {
+    max-width: 80%;
+  }
+
+  #container .links {
+    flex-direction: column;
+    align-items: flex-start;
+
+    & .url-option {
+      margin: 10px 0 0;
+    }
   }
 }
