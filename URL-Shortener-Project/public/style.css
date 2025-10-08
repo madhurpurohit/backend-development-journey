@@ -88,7 +88,7 @@ body {
 }
 
 #container {
-  width: 100%;
+  width: 80%;
   max-width: 700px;
   background-color: var(--container-background);
   padding: 20px;
@@ -317,10 +317,6 @@ body {
 @media (max-width: 760px) {
   html {
     font-size: 14px;
-  }
-
-  #container {
-    max-width: 80%;
   }
 
   #container .links {
