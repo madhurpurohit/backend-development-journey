@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1759568645893,
-      "tag": "0000_careful_greymalkin",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1759601294406,
-      "tag": "0001_kind_lady_bullseye",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1759745809341,
-      "tag": "0002_acoustic_dakota_north",
+      "when": 1759913756937,
+      "tag": "0000_cynical_skin",
       "breakpoints": true
     }
   ]

@@ -132,7 +132,7 @@ export const postShortenerEditPage = async (req, res) => {
       return res.redirect(`/edit/${id}`);
     }
 
-    console.log(newUpdateShortCode);
+    // console.log(newUpdateShortCode);
     res.redirect("/");
   } catch (error) {
     // console.log("\nError:\n\n", error);

@@ -1,12 +1,14 @@
-import express from "express";
-import path from "path";
-import { shortenerRoutes } from "./routes/shortener.route.js";
-import { envSchema } from "./config/env.js";
-import { authRoutes } from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
-import { verifyAuthentication } from "./middlewares/varify-auth.middleware.js";
-import session from "express-session";
+import express from "express";
 import flash from "connect-flash";
+import path from "path";
+import requestIp from "request-ip";
+import session from "express-session";
+
+import { authRoutes } from "./routes/auth.route.js";
+import { envSchema } from "./config/env.js";
+import { shortenerRoutes } from "./routes/shortener.route.js";
+import { verifyAuthentication } from "./middlewares/verify-auth.middleware.js";
 
 const app = express();
 
@@ -21,6 +23,9 @@ app.use(cookieParser());
 //* How to save session using express-session?
 app.use(session({ secret: "Madhur", resave: true, saveUninitialized: false }));
 app.use(flash());
+
+//* How to get IP using request-ip?
+app.use(requestIp.mw());
 
 //* Add middleware where we can check that user is logged in or not.
 app.use(verifyAuthentication);

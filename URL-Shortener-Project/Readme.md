@@ -61,3 +61,5 @@ req.flash("errors");
 ```
 
 ---
+
+The User-Agent is a header sent by the client's browser or application in an HTTP request. It provides about the device, operating system, browser version, and other information.

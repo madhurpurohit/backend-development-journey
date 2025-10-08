@@ -1,8 +1,10 @@
 //* EJS by default search in views folder.
 import {
+  authenticateUser,
+  clearUserSession,
   comparePassword,
   createUser,
-  generateToken,
+  // generateToken,
   getHashedPassword,
   getUserByEmail,
 } from "../services/auth.services.js";
@@ -44,28 +46,30 @@ export const postLogin = async (req, res) => {
 
   const { email, password } = validateResult?.data;
 
-  const userExists = await getUserByEmail(email);
+  const user = await getUserByEmail(email);
   // console.log(userExists);
 
-  if (!userExists) {
+  if (!user) {
     req.flash("errors", "Invalid Email or Password");
     return res.redirect("/login");
   }
 
-  const isPasswordMatch = await comparePassword(password, userExists.password);
+  const isPasswordMatch = await comparePassword(password, user.password);
 
   if (!isPasswordMatch) {
     req.flash("errors", "Invalid Email or Password");
     return res.redirect("/login");
   }
 
-  const token = generateToken({
-    id: userExists.id,
-    name: userExists.name,
-    email: userExists.email,
-  });
+  // const token = generateToken({
+  //   id: userExists.id,
+  //   name: userExists.name,
+  //   email: userExists.email,
+  // });
+  // res.cookie("access_token", token);
 
-  res.cookie("access_token", token);
+  await authenticateUser({ req, res, user });
+
   res.redirect("/");
 };
 
@@ -74,7 +78,7 @@ export const postRegister = async (req, res) => {
 
   // console.log(req.body);
   // const { name, email, password } = req.body;
-  console.log("Request Body: ", req.body);
+  // console.log("Request Body: ", req.body);
 
   //* Validate user input.
   const validateResult = registerUserSchema.safeParse(req.body);
@@ -102,7 +106,10 @@ export const postRegister = async (req, res) => {
   const user = await createUser({ name, email, password: hashPassword });
   // console.log(user);
 
-  res.redirect("/login");
+  // res.redirect("/login");
+  await authenticateUser({ req, res, user, name, email });
+
+  res.redirect("/");
 };
 
 //! Do you need to set path=/ while using cookieParser?
@@ -114,7 +121,10 @@ export const getMe = (req, res) => {
   return res.send(`<h1>Hey ${req.user.name} - ${req.user.email}</h1>`);
 };
 
-export const logoutUser = (req, res) => {
+export const logoutUser = async (req, res) => {
+  await clearUserSession(req.user.sessionId);
+
   res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
   res.redirect("/login");
 };
