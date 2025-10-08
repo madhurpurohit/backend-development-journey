@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   int,
   varchar,
@@ -27,6 +27,19 @@ export const sessionTable = mysqlTable("sessions", {
   valid: boolean("valid").default(true).notNull(),
   userAgent: text("user_agent"),
   ip: varchar("ip", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});
+
+export const verifyEmailTokensTable = mysqlTable("verifyEmailToken", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" }),
+  token: varchar("token", { length: 255 }),
+  expiresAt: timestamp("expires_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP + INTERVAL 1 DAY)`),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
@@ -62,3 +75,5 @@ export const sessionRelation = relations(sessionTable, ({ one }) => ({
     references: [userTable.id], // this is a primary key
   }),
 }));
+
+//todo Note:- We don't need to define a relation for verifyEmailTokensTable because it is used for a specific purpose of verifying emails and is not related to any other table.

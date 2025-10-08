@@ -8,6 +8,8 @@
 4. [How to get flash message](#4-how-to-get-flash-message)
 5. [How to get User-Agent](#5-how-to-get-user-agent)
 6. [Approach for refresh token](#6-approach-for-refreshing-token)
+7. [How to use timestamp in drizzle for set an expiry date](#7-how-to-use-timestamp-in-drizzle-for-set-an-expiry-date-it-means-from-now-till-how-many-days-it-will-expire)
+8. [How to use timestamp in drizzle for set an expiry date](#7-how-to-use-timestamp-in-drizzle-for-set-an-expiry-date-it-means-from-now-till-how-many-days-it-will-expire)
 
 ## 1. What is connect-flash & express-session npm package, & why we use it?
 
@@ -154,3 +156,63 @@ When an access token expires, this function creates new tokens.
 - [x] If successful, the new tokens will be stored in the user's cookies for future authentication.
 
 ---
+
+## 7. How to use timestamp in drizzle for set an expiry date, it means from now till how many days it will expire?
+
+For this brackets inside sql `` is necessary here, otherwise we will get syntax error.
+
+```js
+field: timestamp().default(sql`(CURRENT_TIMESTAMP + INTERVAL 1 DAY)`);
+```
+
+---
+
+## 8. Understanding references vs. relations in Drizzle ORM
+
+When defining table connections in Drizzle ORM, it's helpful to think of the process in two distinct parts: one that operates at the database level and another that serves your application code.
+
+1. **references():** The Database-Level Rule
+
+   - **What it is:** This function establishes a Foreign Key constraint in the database schema.
+
+   - **Purpose:** Its primary role is to enforce referential integrity. It dictates that a value in one table's column must correspond to an existing value in another table's column, thereby preventing orphaned records and maintaining data consistency.
+
+   - **Analogy:** Think of this as an official government record. It's a strict, non-negotiable rule enforced by the database system itself.
+
+2. **relations():** The Application-Level Utility
+
+   - **What it is:** This function defines the relationships between tables specifically for the Drizzle ORM layer in your application.
+
+   - **Purpose:** It enables convenient and type-safe querying of related data. By defining relations, you instruct Drizzle on how to perform joins, allowing you to fetch a primary record along with its associated records (e.g., a user and all of their short links) in a single, efficient query. This practice is often called eager loading.
+
+   - **Analogy:** Consider this your phone's contact list. You save a number under a name for your convenience to quickly find and call it. Similarly, relations provides a convenient shortcut for your code to "call" upon related data without writing complex manual joins.
+
+- **In short:-**
+
+  - **`references()`:** Enforces rules at the database level. It is fundamental for data integrity.
+
+  - **`relations()`:** Provides convenience at the application level. It is optional and used to simplify type-safe queries that involve related data.
+
+---
+
+## 9. The Guiding Principle: When to Define relations
+
+To decide whether you need to define a relation, ask yourself this simple question:
+
+**Example:** "In my application, will I frequently need to query data from Table A and concurrently fetch its related data from Table B?"
+
+- **If the answer is "Yes":**
+
+  - **Example:** "I need to display a user's profile along with a list of all their generated short links."
+
+  - **Action:** You should define a relation.
+
+- **If the answer is "No":**
+
+  - **Example:** "I will never need to fetch a user along with all of their email verification tokens. My use case is to query the token itself to find the associated user."
+
+  - **Action:** A relation is likely unnecessary. The references() foreign key constraint is sufficient for ensuring database integrity.
+
+---
+
+## 10.
