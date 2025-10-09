@@ -15,7 +15,7 @@ const app = express();
 const staticPath = path.join(import.meta.dirname, "public");
 
 app.use(express.static(staticPath));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); //* It is used to parse incoming requests with URL-encoded payloads.
 
 //* How to parse cookie.
 app.use(cookieParser());

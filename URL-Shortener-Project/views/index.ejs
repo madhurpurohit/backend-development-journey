@@ -17,80 +17,84 @@
   <body>
     <%- include("partials/header.ejs") %>
 
-    <div id="container">
-      <% if(user) { %>
-      <div class="status-badge success">
-        <i class="zmdi zmdi-check-circle"></i>
-        <span>You are logged In</span>
-      </div>
-      <% } else { %>
-      <div class="status-badge warning">
-        <i class="zmdi zmdi-alert-circle"></i>
-        <span>You are not logged In</span>
-      </div>
-      <% } %>
-
-      <h1>URL Shortener</h1>
-      <form action="/" method="post">
-        <div class="input-div">
-          <label for="url">Enter URL:</label>
-          <input
-            type="url"
-            name="url"
-            id="url"
-            placeholder="Enter URL Here"
-            required
-          />
+    <main>
+      <div id="container">
+        <% if(user) { %>
+        <div class="status-badge success">
+          <i class="zmdi zmdi-check-circle"></i>
+          <span>You are logged In</span>
         </div>
-        <div class="input-div">
-          <label for="shortCode">Enter Short Code:</label>
-          <input
-            type="text"
-            name="shortCode"
-            id="shortCode"
-            placeholder="Enter Short Code Here"
-            required
-          />
+        <% } else { %>
+        <div class="status-badge warning">
+          <i class="zmdi zmdi-alert-circle"></i>
+          <span>You are not logged In</span>
         </div>
+        <% } %>
 
-        <% if(errors && errors.length>0){ %> <% errors.forEach((error) => { %>
-        <p class="flash-error"><%= error %></p>
-        <% }) %> <% } %>
+        <h1>URL Shortener</h1>
+        <form action="/" method="post">
+          <div class="input-div">
+            <label for="url">Enter URL:</label>
+            <input
+              type="url"
+              name="url"
+              id="url"
+              placeholder="Enter URL Here"
+              required
+            />
+          </div>
+          <div class="input-div">
+            <label for="shortCode">Enter Short Code:</label>
+            <input
+              type="text"
+              name="shortCode"
+              id="shortCode"
+              placeholder="Enter Short Code Here"
+              required
+            />
+          </div>
 
-        <button type="submit">Shorten</button>
-      </form>
+          <% if(errors && errors.length>0){ %> <% errors.forEach((error) => { %>
+          <p class="flash-error"><%= error %></p>
+          <% }) %> <% } %>
 
-      <h2>Shortened URLs:</h2>
-      <ul>
-        <% if(links.length>0) {%> <% links.forEach((link) => { %>
-        <div class="links">
-          <li>
-            <a href="/<%= link.shortCode %>" target="_blank"
-              ><%= `http://${host}/${link.shortCode}` %></a
-            >
-            <span><%= link.url %></span>
-          </li>
-          <div class="url-option">
-            <form action="/delete/<%= link.id %>" method="post">
-              <button class="url-delete" type="submit">
-                <i class="zmdi zmdi-delete"></i>
-              </button>
-            </form>
-            <div class="url-update">
-              <a href="/edit/<%= link.id %>"><i class="zmdi zmdi-edit"></i></a>
-            </div>
-            <div class="url-actions">
-              <button class="copy-btn" data-url="<%= link.url %>">
-                <i class="zmdi zmdi-copy"></i>
-              </button>
+          <button type="submit">Shorten</button>
+        </form>
+
+        <h2>Shortened URLs:</h2>
+        <ul>
+          <% if(links.length>0) {%> <% links.forEach((link) => { %>
+          <div class="links">
+            <li>
+              <a href="/<%= link.shortCode %>" target="_blank"
+                ><%= `http://${host}/${link.shortCode}` %></a
+              >
+              <span><%= link.url %></span>
+            </li>
+            <div class="url-option">
+              <form action="/delete/<%= link.id %>" method="post">
+                <button class="url-delete" type="submit">
+                  <i class="zmdi zmdi-delete"></i>
+                </button>
+              </form>
+              <div class="url-update">
+                <a href="/edit/<%= link.id %>"
+                  ><i class="zmdi zmdi-edit"></i
+                ></a>
+              </div>
+              <div class="url-actions">
+                <button class="copy-btn" data-url="<%= link.url %>">
+                  <i class="zmdi zmdi-copy"></i>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <% }) %> <% } else { %>
-        <p class="no-urls">No URLs have been shortened yet.</p>
-        <% } %>
-      </ul>
-    </div>
+          <% }) %> <% } else { %>
+          <p class="no-urls">No URLs have been shortened yet.</p>
+          <% } %>
+        </ul>
+      </div>
+    </main>
 
     <%- include("partials/footer.ejs") %>
 

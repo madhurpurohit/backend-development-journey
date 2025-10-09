@@ -16,63 +16,66 @@
   <body>
     <%- include("../partials/header.ejs") %>
 
-    <div class="card">
-      <div class="card-left">
-        <img
-          src="/images/signin-image.jpg"
-          alt="Illustration of a person working"
-        />
-      </div>
+    <main>
+      <div class="card">
+        <div class="card-left">
+          <img
+            src="/images/signin-image.jpg"
+            alt="Illustration of a person working"
+          />
+        </div>
 
-      <div class="card-right">
-        <h1>Sign In</h1>
-        <form action="/login" method="post">
-          <div class="form-group">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="form-input"
-              placeholder="Your Email"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              class="form-input"
-              placeholder="Password"
-              required
-            />
-          </div>
+        <div class="card-right">
+          <h1>Sign In</h1>
+          <form action="/login" method="post">
+            <div class="form-group">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-input"
+                placeholder="Your Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input"
+                placeholder="Password"
+                required
+              />
+            </div>
 
-          <% if(errors && errors.length>0){ %> <% errors.forEach((error) => { %>
-          <p class="flash-error"><%= error %></p>
-          <% }) %> <% } %>
+            <% if(errors && errors.length>0){ %> <% errors.forEach((error) => {
+            %>
+            <p class="flash-error"><%= error %></p>
+            <% }) %> <% } %>
 
-          <div class="remember-me">
-            <input type="checkbox" id="remember" />
-            <label for="remember">Remember me</label>
-          </div>
-          <button type="submit" class="login-btn">Log in</button>
-        </form>
-        <div class="card-footer">
-          <div class="create-account">
-            <a href="/register">Create an account</a>
-          </div>
-          <div class="social-login">
-            <span>Or login with</span>
-            <div class="social-icons">
-              <div class="social-icon icon-blue"></div>
-              <div class="social-icon icon-lightblue"></div>
-              <div class="social-icon icon-red"></div>
+            <div class="remember-me">
+              <input type="checkbox" id="remember" />
+              <label for="remember">Remember me</label>
+            </div>
+            <button type="submit" class="login-btn">Log in</button>
+          </form>
+          <div class="card-footer">
+            <div class="create-account">
+              <a href="/register">Create an account</a>
+            </div>
+            <div class="social-login">
+              <span>Or login with</span>
+              <div class="social-icons">
+                <div class="social-icon icon-blue"></div>
+                <div class="social-icon icon-lightblue"></div>
+                <div class="social-icon icon-red"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <%- include("../partials/footer.ejs") %>
   </body>

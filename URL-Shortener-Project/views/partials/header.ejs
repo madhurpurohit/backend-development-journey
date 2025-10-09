@@ -7,6 +7,7 @@
     <title>Header</title>
   </head>
   <body>
+    <% if(user){ %>
     <div class="navigation-menu">
       <header>
         <div class="logo">
@@ -18,13 +19,8 @@
             <a href="/"><li>Home</li></a>
             <a href="/"><li>About</li></a>
             <a href="/"><li>Service</li></a>
-            <% if(!user){ %>
-            <a href="/login"><li>LogIn</li></a>
-            <a href="/register"><li>Register</li></a>
-            <% } else { %>
             <a href="/profile"><li>Profile</li></a>
             <a href="/logout"><li>LogOut</li></a>
-            <% } %>
           </ul>
         </nav>
 
@@ -35,6 +31,7 @@
         </div>
       </header>
     </div>
+    <% } %>
 
     <script>
       const hamburger = document.querySelector(".hamburger");

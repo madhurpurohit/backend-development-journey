@@ -221,11 +221,53 @@ export const createVerifyEmailLink = async ({ email, token }) => {
   return url.toString();
 };
 
+//* Find the token in the database and verify it is valid or not. Without using Joins.
+// export const findVerificationEmailToken = async ({ token, email }) => {
+//   //* 1. Find the token in the database and check it is expired or not.
+//   const tokenData = await db
+//     .select({
+//       userId: verifyEmailTokensTable.userId,
+//       token: verifyEmailTokensTable.token,
+//       expiresAt: verifyEmailTokensTable.expiresAt,
+//     })
+//     .from(verifyEmailTokensTable)
+//     .where(
+//       and(
+//         eq(verifyEmailTokensTable.token, token),
+//         gte(verifyEmailTokensTable.expiresAt, sql`CURRENT_TIMESTAMP`)
+//       )
+//     );
+
+//   if (!tokenData.length) {
+//     return null;
+//   }
+
+//   const { userId } = tokenData[0];
+
+//   //* 2. Find the user by userId.
+//   const userData = await db
+//     .select({ userId: userTable.id, email: userTable.email })
+//     .from(userTable)
+//     .where(eq(userTable.id, userId));
+
+//   if (!userData.length) {
+//     return null;
+//   }
+
+//   return {
+//     userId: userData[0].userId,
+//     email: userData[0].email,
+//     token: tokenData[0].token,
+//     expiresAt: tokenData[0].expiresAt,
+//   };
+// };
+
+//* Find the token in the database and verify it is valid or not. Using Joins.
 export const findVerificationEmailToken = async ({ token, email }) => {
-  //* 1. Find the token in the database and check it is expired or not.
-  const tokenData = await db
+  return db
     .select({
-      userId: verifyEmailTokensTable.userId,
+      userId: userTable.id,
+      email: userTable.email,
       token: verifyEmailTokensTable.token,
       expiresAt: verifyEmailTokensTable.expiresAt,
     })
@@ -233,32 +275,11 @@ export const findVerificationEmailToken = async ({ token, email }) => {
     .where(
       and(
         eq(verifyEmailTokensTable.token, token),
+        eq(userTable.email, email),
         gte(verifyEmailTokensTable.expiresAt, sql`CURRENT_TIMESTAMP`)
       )
-    );
-
-  if (!tokenData.length) {
-    return null;
-  }
-
-  const { userId } = tokenData[0];
-
-  //* 2. Find the user by userId.
-  const userData = await db
-    .select({ userId: userTable.id, email: userTable.email })
-    .from(userTable)
-    .where(eq(userTable.id, userId));
-
-  if (!userData.length) {
-    return null;
-  }
-
-  return {
-    userId: userData[0].userId,
-    email: userData[0].email,
-    token: tokenData[0].token,
-    expiresAt: tokenData[0].expiresAt,
-  };
+    )
+    .innerJoin(userTable, eq(verifyEmailTokensTable.userId, userTable.id));
 };
 
 export const verifyUserEmailAndUpdate = async (email) => {

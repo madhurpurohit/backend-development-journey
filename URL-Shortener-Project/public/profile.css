@@ -56,8 +56,20 @@ body {
   min-height: 100vh;
   background-color: var(--body-background);
   color: var(--text-color);
-  padding: 100px 0;
+  padding: 100px 0 0;
   line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+main {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .container {
