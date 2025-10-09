@@ -1,11 +1,17 @@
-import { eq, name } from "drizzle-orm";
+import { eq, lt, sql } from "drizzle-orm";
 import { db } from "../config/db.js";
 // import bcrypt from "bcrypt";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import "dotenv/config";
 
-import { sessionTable, shortLinksTable, userTable } from "../drizzle/schema.js";
+import {
+  sessionTable,
+  shortLinksTable,
+  userTable,
+  verifyEmailTokensTable,
+} from "../drizzle/schema.js";
 import {
   ACCESS_TOKEN_EXPIRY,
   MILLISECONDS_PER_SECOND,
@@ -167,4 +173,48 @@ export const getAllShortLinks = async (userId) => {
     .select()
     .from(shortLinksTable)
     .where(eq(shortLinksTable.userId, userId));
+};
+
+export const generateRandomToken = (digit = 8) => {
+  const min = 10 ** (digit - 1); // 10000000
+  const max = 10 ** digit; // 100000000
+
+  return crypto.randomInt(min, max).toString();
+};
+
+export const insertVerifyEmailToken = async ({ userId, token }) => {
+  return db.transaction(async (tx) => {
+    try {
+      //* Delete any existing expired tokens.
+      await tx
+        .delete(verifyEmailTokensTable)
+        .where(lt(verifyEmailTokensTable.expiresAt, sql`CURRENT_TIMESTAMP`));
+
+      //* Delete any existing tokens for the user.
+      await tx
+        .delete(verifyEmailTokensTable)
+        .where(eq(verifyEmailTokensTable.userId, userId));
+
+      //* Insert the new token.
+      return await tx.insert(verifyEmailTokensTable).values({ userId, token });
+    } catch (error) {
+      console.error("Failed to insert verify email token", error);
+      throw new Error("Unable to create verification token");
+    }
+  });
+};
+
+// export const createVerifyEmailLink = async ({ email, token }) => {
+//   const urlEncodedEmail = encodeURIComponent(email);
+
+//   return `${process.env.FRONTEND_URL}://verify-email-token?token=${token}&email=${urlEncodedEmail}`;
+// };
+
+export const createVerifyEmailLink = async ({ email, token }) => {
+  //* Create the verify email link URL instance Using URL API
+  const url = new URL(`${process.env.FRONTEND_URL}/verify-email-token`);
+
+  //* Add the query parameters
+  url.searchParams.append("token", token);
+  url.searchParams.append("email", email);
 };

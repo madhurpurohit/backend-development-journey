@@ -9,7 +9,21 @@
 5. [How to get User-Agent](#5-how-to-get-user-agent)
 6. [Approach for refresh token](#6-approach-for-refreshing-token)
 7. [How to use timestamp in drizzle for set an expiry date](#7-how-to-use-timestamp-in-drizzle-for-set-an-expiry-date-it-means-from-now-till-how-many-days-it-will-expire)
-8. [How to use timestamp in drizzle for set an expiry date](#7-how-to-use-timestamp-in-drizzle-for-set-an-expiry-date-it-means-from-now-till-how-many-days-it-will-expire)
+8. [Understanding references vs. relations in Drizzle ORM](#8-understanding-references-vs-relations-in-drizzle-orm)
+9. [The Guiding Principle: When to Define relations](#9-the-guiding-principle-when-to-define-relations)
+10. [What is Nodemailer](#10-what-is-nodemailer)
+11. [What is Ethereal](#11-what-is-ethereal)
+12. [Steps to Use Ethereal with Nodemailer](#12-steps-to-use-ethereal-with-nodemailer)
+13. [Another way Use Ethereal with Nodemailer](#13-another-way-use-ethereal-with-nodemailer)
+14. [What is Transaction in DBMS?](#14-what-is-transaction-in-dbms)
+15. [How to use Transaction in DBMS?](#15-how-to-use-transaction-in-dbms)
+16. [What is URL API](#16-what-is-url-api)
+17. []()
+18. []()
+19. []()
+20. []()
+
+---
 
 ## 1. What is connect-flash & express-session npm package, & why we use it?
 
@@ -215,4 +229,305 @@ To decide whether you need to define a relation, ask yourself this simple questi
 
 ---
 
-## 10.
+## 10. What is Nodemailer?
+
+Nodemailer is a popular, zero-dependency library for Node.js designed for sending emails. It's highly flexible and simplifies what can otherwise be a complex process.
+
+**Key Features:**
+
+- **Simple to Use:** It has a straightforward API for composing and sending messages.
+
+- **Multiple Transports:** It can send emails using different services and protocols, most commonly SMTP (used by Gmail, Outlook, etc.), but also others like SendGrid or Amazon SES.
+
+- **Rich Content:** You can easily send emails with HTML content, styled text, images, and attachments.
+
+- **Secure:** It supports secure sending with TLS/SSL and authentication methods like OAuth2.
+
+It's the tool you install in your project `npm install nodemailer` to handle the logic of creating and dispatching an email from your server.
+
+---
+
+## 11. What is Ethereal?
+
+Ethereal is a free, "fake" SMTP service created by the same team behind Nodemailer. Its sole purpose is for testing and development.
+
+**How it Works:**
+
+1. You ask Ethereal to create a **temporary test email account**.
+
+2. Ethereal gives you **SMTP credentials** (host, port, username, and password) that are valid for a short time.
+
+3. You configure **Nodemailer** in your code to use these temporary credentials.
+
+4. When your application sends an email using Nodemailer, it doesn't go to a real inbox. Instead, Ethereal's server **catches the email**.
+
+5. Nodemailer then gives you a **preview URL** in your console. When you open this URL, you can see exactly how your email looks in a web-based inbox.
+
+This is extremely useful because it lets you test your email-sending functionality perfectly—checking layouts, content, and attachments—without spamming real email accounts or needing to set up a dedicated development email server.
+
+---
+
+## 12. Steps to Use Ethereal with Nodemailer
+
+1. Install Nodemailer: `npm install nodemailer`
+
+2. Import Nodemailer: `const nodemailer = require("nodemailer");`
+
+3. Generate a Testing Account: `nodemailer.createTestAccount((err, account) => { ... })`
+
+4. Create a Transporter: `let transporter = nodemailer.createTransport({ ... })`
+
+5. Send an Email: `transporter.sendMail({ ... })`
+
+6. Preview the Email: `transporter.getTestMessageUrl({ ... })`
+
+```js
+const nodemailer = require("nodemailer");
+
+// Create a test account or replace with real credentials.
+const transporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "maddison53@ethereal.email",
+    pass: "jn7jnAPss4f63QBp6D",
+  },
+});
+
+// Wrap in an async IIFE so we can use await.
+(async () => {
+  const info = await transporter.sendMail({
+    from: '"Maddison Foo Koch" <maddison53@ethereal.email>',
+    to: "bar@example.com, baz@example.com",
+    subject: "Hello ✔",
+    text: "Hello world?", // plain‑text body
+    html: "<b>Hello world?</b>", // HTML body
+  });
+
+  console.log("Message sent:", info.messageId);
+
+  // Preview only available when sending through an Ethereal account
+  console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+})();
+```
+
+---
+
+## 13. Another way Use Ethereal with Nodemailer
+
+**Syntax:-**
+
+```js
+// Use at least Nodemailer v4.1.0
+const nodemailer = require("nodemailer");
+
+// Generate SMTP service account from ethereal.email
+nodemailer.createTestAccount((err, account) => {
+  if (err) {
+    console.error("Failed to create a testing account. " + err.message);
+    return process.exit(1);
+  }
+
+  console.log("Credentials obtained, sending message...");
+
+  // Create a SMTP transporter object
+  let transporter = nodemailer.createTransport({
+    host: account.smtp.host, // "smtp.ethereal.email", "smtp.gmail.com" etc.
+    port: account.smtp.port, // 587 etc.
+    secure: account.smtp.secure, // true for port 465, false for other ports.
+    auth: {
+      user: account.user, // generated ethereal user
+      pass: account.pass, // generated ethereal password
+    },
+  });
+
+  // Message object
+  let message = {
+    from: "Sender Name <sender@example.com>", // sender address
+    to: "Recipient <recipient@example.com>", // list of receivers
+    subject: "Nodemailer is unicode friendly ✔", // Subject line
+    text: "Hello to myself!", // plain text body
+    html: "<p><b>Hello</b> to myself!</p>", // html body
+  };
+
+  transporter.sendMail(message, (err, info) => {
+    if (err) {
+      console.log("Error occurred. " + err.message);
+      return process.exit(1);
+    }
+
+    console.log("Message sent: %s", info.messageId);
+
+    // Preview only available when sending through an Ethereal account
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  });
+});
+```
+
+**Output:-**
+
+```
+Credentials obtained, sending message...
+Message sent: <jBbHx@example.com>
+Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+```
+
+---
+
+## 14. What is Transaction in DBMS?
+
+A transaction is a sequence of one or more database operations (such as INSERT, DELETE, UPDATE) that are executed as a single unit of work. The entire sequence must either complete successfully (commit) or fail entirely (rollback), maintaining the database in a consistent state regardless of the outcome.
+
+#### Why should we use Transaction?
+
+1. **Ensure Data Integrity:** If one operation fails, the entire transaction is rolled back to prevent partial updates.
+
+2. **Prevent Data Corruption:** Avoids inconsistent states due to system crashes or errors.
+
+3. **Maintain Atomicity:** Ensures all operations succeed or none are applied.
+
+4. **Handle Concurrent Request:** Prevents issue like race condition & dirty reads in multi-user environments.
+
+5. **Rollback on Failure:** If any step fails, the database reverts to its previous state.
+
+#### Where should we use Transaction?
+
+- **User Authentication & Verification:** Ensuring email verification tokens are uniques and properly stored.
+
+- **E-commerce Payments:** Updating inventory, processing payments, and confirming orders simultaneously.
+
+- **Banking Systems:** Ensuring money is deducted from one account and credited to another account.
+
+- **Booking & Reservation:** Preventing double bookings in flight/hotel reservation systems.
+
+- **Batch Updates:** Performing multiple related updates in a single operation like bulk inserting records.
+
+---
+
+## 15. How to use Transaction in DBMS?
+
+**Syntax:-**
+
+```drizzle
+import { sql } from "drizzle-orm";
+
+const result = await db.transaction(async (tx) => {
+  const result1 = await tx.query(sql`SELECT * FROM table1`);
+  const result2 = await tx.query(sql`SELECT * FROM table2`);
+  return { result1, result2 };
+});
+```
+
+**Example:**
+
+```drizzle
+import { sql } from "drizzle-orm";
+
+const result = await db.transaction(async (tx) => {
+  try {
+    await tx
+    .delete(verifyEmailTokensTable)
+    .where(lt(verifyEmailTokensTable.expiresAt, sql`CURRENT_TIMESTAMP`));
+
+    return await tx.insert(verifyEmailTokensTable).values({ userId, token });
+  } catch (error) {
+    await tx.rollback(); // Rollback the transaction
+    throw error;
+  }
+})
+```
+
+---
+
+## 16. What is URL API?
+
+The URL API in JavaScript provides an easy way to construct, manipulate, and parse URLs without manual string concatenation. It ensures correct encoding, readability, and security when handling URLs.
+
+```js
+const url = new URL("https://example.com/profile?id=42&theme=dark");
+
+console.log(url.hostname); // "example.com"
+console.log(url.pathname); // "/profile"
+console.log(url.searchParams.get("id")); // "42"
+console.log(url.searchParams.get("theme")); // "dark"
+```
+
+#### 💡 Why Use the URL API?
+
+✅ Easier URL Construction – No need for manual ? and & handling.
+✅ Automatic Encoding – Prevents issues with special characters.
+✅ Better Readability – Clean and maintainable code.
+
+**Definition:-** The URL API is a built-in web interface that provides tools to easily parse, construct, and modify URLs. It allows you to treat a URL as a structured object with distinct properties, making it much safer and more reliable than manually manipulating URL strings with regular expressions or string splitting. It is available in all modern web browsers and in Node.js.
+
+#### Why Use the URL API?
+
+Imagine you have this URL string: `https://www.example.com:8080/path/to/page?query=123&sort=asc#section-2`
+
+Without the URL API, you would have to use complex string methods to extract the protocol (https), hostname (www.example.com), or query parameters (query=123). This is prone to errors.
+
+The URL API simplifies this by converting the string into an object, where each part is a neatly accessible property.
+
+```js
+// Create a new URL object
+const myUrl = new URL(
+  "https://www.example.com:8080/path/to/page?query=123&sort=asc#section-2"
+);
+```
+
+### Key Properties of the URL Object
+
+Once you create a URL object, you can easily access its components:
+
+- **`href`:** Returns the full URL string.
+
+  - `myUrl.href` ➡️ `https://www.example.com:8080/path/to/page?query=123&sort=asc#section-2`
+
+- **`protocol`:** Returns the protocol scheme of the URL, including the final ':'.
+
+  - `myUrl.protocol` ➡️ `https:`
+
+- **`hostname`:** Returns the domain name.
+
+  - `myUrl.hostname` ➡️ `www.example.com`
+
+- **`port`:** Returns the port number.
+
+  - `myUrl.port` ➡️ `8080`
+
+- **`pathname`:** Returns the path, which starts with a '/'.
+
+  - `myUrl.pathname` ➡️ `/path/to/page`
+
+- **`search`:** Returns the entire query string, starting with a '?'.
+
+  - `myUrl.search` ➡️ `?query=123&sort=asc`
+
+- **`hash`:** Returns the fragment identifier, starting with a '#'.
+
+  - `myUrl.hash` ➡️ `#section-2`
+
+#### Working with Query Parameters (searchParams)
+
+One of the most powerful features of the URL API is the searchParams property. It returns a URLSearchParams object, which provides simple methods to read and modify the query string.
+
+```js
+// Using the 'myUrl' object from before
+const params = myUrl.searchParams;
+
+// Get a specific parameter
+console.log(params.get("query")); // "123"
+
+// Check if a parameter exists
+console.log(params.has("sort")); // true
+
+// Add a new parameter
+params.append("newParam", "hello");
+
+// The full URL is automatically updated!
+console.log(myUrl.href);
+// "https://www.example.com:8080/path/to/page?query=123&sort=asc&newParam=hello#section-2"
+```
+
+---

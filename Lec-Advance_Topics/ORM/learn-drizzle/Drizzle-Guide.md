@@ -217,3 +217,25 @@ main().catch((err) => {
   ```
 
 ---
+
+## How to get some specific column data?
+
+**Syntax:**
+
+```js
+.select({key: table.columnName}).from(table);
+```
+
+**Example:**
+
+```js
+const users = await db
+  .select({
+    name: userTable.name,
+    email: userTable.email,
+  })
+  .from(userTable);
+console.log(users);
+```
+
+---

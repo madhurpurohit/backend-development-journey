@@ -56,9 +56,7 @@ body {
   min-height: 100vh;
   background-color: var(--body-background);
   color: var(--text-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 100px 0;
   line-height: 1.6;
 }
 
@@ -259,10 +257,6 @@ body {
 }
 
 @media (max-width: 700px) {
-  .container {
-    padding: 100px 0 120px;
-    max-width: 80%;
-  }
   .page-title {
     font-size: 1.8rem;
   }

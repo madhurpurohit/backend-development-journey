@@ -24,6 +24,12 @@ router.route("/me").get(authController.getMe);
 
 router.route("/profile").get(authController.getProfilePage);
 
+router.route("/verify-email").get(authController.getVerifyEmailPage);
+
 router.route("/logout").get(authController.logoutUser);
+
+router
+  .route("/resend-verification-link")
+  .post(authController.resendVerificationLink);
 
 export const authRoutes = router;
