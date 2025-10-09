@@ -3,20 +3,24 @@ import { sendMail } from "../lib/nodemailer.js";
 import {
   authenticateUser,
   clearUserSession,
+  clearVerifyEmailTokens,
   comparePassword,
   createUser,
   createVerifyEmailLink,
   findUserById,
+  findVerificationEmailToken,
   generateRandomToken,
   getAllShortLinks,
   // generateToken,
   getHashedPassword,
   getUserByEmail,
   insertVerifyEmailToken,
+  verifyUserEmailAndUpdate,
 } from "../services/auth.services.js";
 import {
   loginUserSchema,
   registerUserSchema,
+  verifyEmailSchema,
 } from "../validation/auth.validation.js";
 
 export const getRegisterPage = (req, res) => {
@@ -170,6 +174,7 @@ export const getVerifyEmailPage = async (req, res) => {
 
 export const resendVerificationLink = async (req, res) => {
   if (!req.user) return res.redirect("/login");
+
   const user = await findUserById(req.user.id);
   if (!user || user.isEmailValid) return res.redirect("/login");
 
@@ -193,4 +198,23 @@ export const resendVerificationLink = async (req, res) => {
   });
 
   res.redirect("/verify-email");
+};
+
+export const verifyEmailToken = async (req, res) => {
+  const { data, error } = verifyEmailSchema.safeParse(req.query);
+
+  if (error) return res.send("Verification link invalid or expired.");
+
+  //* Find the token in the database and verify it is valid or not.
+  const token = await findVerificationEmailToken(data);
+
+  if (!token) return res.send("Verification link invalid or expired.");
+
+  //* Verify user email and update isEmailValid field.
+  await verifyUserEmailAndUpdate(token.email);
+
+  //* Delete the token from the database after verification.
+  await clearVerifyEmailTokens(token.userId).catch(console.error);
+
+  return res.redirect("/profile");
 };

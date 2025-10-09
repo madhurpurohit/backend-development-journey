@@ -18,7 +18,7 @@
 14. [What is Transaction in DBMS?](#14-what-is-transaction-in-dbms)
 15. [How to use Transaction in DBMS?](#15-how-to-use-transaction-in-dbms)
 16. [What is URL API](#16-what-is-url-api)
-17. []()
+17. [What is Join in MySQL?](#17-what-is-join-in-mysql)
 18. []()
 19. []()
 20. []()
@@ -529,5 +529,112 @@ params.append("newParam", "hello");
 console.log(myUrl.href);
 // "https://www.example.com:8080/path/to/page?query=123&sort=asc&newParam=hello#section-2"
 ```
+
+---
+
+## 17. What is Join in MySQL?
+
+Joins are used to combine rows from two or more tables based on a related column. When we need data from two (or more) tables in a **single query**, we use **JOINs**.
+
+Commonly used joins in MySQL:
+
+- INNER JOIN
+- LEFT JOIN
+- RIGHT JOIN
+
+**Definition:** A MySQL JOIN is a clause used to combine rows from two or more tables based on a related column between them. JOINs are essential for querying data from a relational database where information is intentionally spread across multiple tables to avoid redundancy (a concept called normalization).
+
+**Example:** Think of it like this: you have one table with customer information (Customers) and another with order details (Orders). Neither table by itself tells you which customer placed which order. A JOIN lets you link them together using a common field, like customer_id, to get a complete picture.
+
+#### Why Use JOINs?
+
+In database design, you separate data into different tables to keep it organized and efficient. For example:
+
+    - **Customers Table:** customer_id, name, email
+
+    - **Orders Table:** order_id, order_date, customer_id
+
+If you wanted to find the name of the customer who placed a specific order, you would need to use a `JOIN` to connect these two tables on the customer_id column.
+
+#### Common types of JOINs
+
+1. **INNER JOIN:**
+
+This is the most frequently used join. It returns only the rows where the key exists in both tables. If a customer has never placed an order, they will not appear in the result.
+
+**Syntax:**
+
+```js
+SELECT Customers.name, Orders.order_date
+FROM Customers
+INNER JOIN Orders ON Customers.customer_id = Orders.customer_id;
+
+// This query returns a list of customer names and their corresponding order dates for only those customers who have placed an order.
+```
+
+2. **LEFT JOIN (LEFT OUTER JOIN)**
+
+A `LEFT JOIN` returns all rows from the left table (`Customers`), and the matched rows from the right table (`Orders`). If there is no match for a customer in the `Orders` table, the columns from `Orders` will contain `NULL`.
+
+This is useful for finding things like "Show me all customers, and list their orders if they have any."
+
+```js
+SELECT Customers.name, Orders.order_date
+FROM Customers
+LEFT JOIN Orders ON Customers.customer_id = Orders.customer_id;
+
+```
+
+This result will include all customers, even those with `NULL` in the `order_date` column because they haven't made any purchases.
+
+3. **RIGHT JOIN (RIGHT OUTER JOIN)**
+
+A `RIGHT JOIN` is the opposite of a `LEFT JOIN`. It returns all rows from the right table (`Orders`), and the matched rows from the left table (`Customers`). If an order somehow has a `customer_id` that doesn't exist in the `Customers` table, that order will still be listed with `NULL` for the customer's name.
+
+```js
+SELECT Customers.name, Orders.order_date
+FROM Customers
+RIGHT JOIN Orders ON Customers.customer_id = Orders.customer_id;
+```
+
+This is less common than `LEFT JOIN` but can be useful in specific scenarios.
+
+4. **FULL OUTER JOIN**
+
+A `FULL OUTER JOIN` combines the results of both `LEFT` and `RIGHT` JOINs. It returns all rows from both tables, with `NULL` values on either side where a match is not found.
+
+Note: MySQL does not have a specific `FULL OUTER JOIN` keyword. You must emulate it by combining a `LEFT JOIN` and a `RIGHT JOIN` with the `UNION` operator.
+
+```js
+-- This is how you simulate a FULL OUTER JOIN in MySQL
+
+SELECT Customers.name, Orders.order_date
+FROM Customers
+LEFT JOIN Orders ON Customers.customer_id = Orders.customer_id
+UNION
+SELECT Customers.name, Orders.order_date
+FROM Customers
+RIGHT JOIN Orders ON Customers.customer_id = Orders.customer_id;
+```
+
+---
+
+## 18. 
+
+
+
+---
+
+
+## 19. 
+
+
+
+---
+
+
+## 20. 
+
+
 
 ---

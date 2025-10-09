@@ -1,4 +1,4 @@
-import { eq, lt, sql } from "drizzle-orm";
+import { and, eq, gte, lt, sql } from "drizzle-orm";
 import { db } from "../config/db.js";
 // import bcrypt from "bcrypt";
 import argon2 from "argon2";
@@ -217,4 +217,59 @@ export const createVerifyEmailLink = async ({ email, token }) => {
   //* Add the query parameters
   url.searchParams.append("token", token);
   url.searchParams.append("email", email);
+
+  return url.toString();
+};
+
+export const findVerificationEmailToken = async ({ token, email }) => {
+  //* 1. Find the token in the database and check it is expired or not.
+  const tokenData = await db
+    .select({
+      userId: verifyEmailTokensTable.userId,
+      token: verifyEmailTokensTable.token,
+      expiresAt: verifyEmailTokensTable.expiresAt,
+    })
+    .from(verifyEmailTokensTable)
+    .where(
+      and(
+        eq(verifyEmailTokensTable.token, token),
+        gte(verifyEmailTokensTable.expiresAt, sql`CURRENT_TIMESTAMP`)
+      )
+    );
+
+  if (!tokenData.length) {
+    return null;
+  }
+
+  const { userId } = tokenData[0];
+
+  //* 2. Find the user by userId.
+  const userData = await db
+    .select({ userId: userTable.id, email: userTable.email })
+    .from(userTable)
+    .where(eq(userTable.id, userId));
+
+  if (!userData.length) {
+    return null;
+  }
+
+  return {
+    userId: userData[0].userId,
+    email: userData[0].email,
+    token: tokenData[0].token,
+    expiresAt: tokenData[0].expiresAt,
+  };
+};
+
+export const verifyUserEmailAndUpdate = async (email) => {
+  return await db
+    .update(userTable)
+    .set({ isEmailValid: true })
+    .where(eq(userTable.email, email));
+};
+
+export const clearVerifyEmailTokens = async (userId) => {
+  return await db
+    .delete(verifyEmailTokensTable)
+    .where(eq(verifyEmailTokensTable.userId, userId));
 };
