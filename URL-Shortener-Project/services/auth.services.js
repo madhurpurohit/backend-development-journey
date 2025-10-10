@@ -5,6 +5,10 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import "dotenv/config";
+import ejs from "ejs";
+import fs from "fs/promises";
+import path from "path";
+import mjml2html from "mjml";
 
 import {
   sessionTable,
@@ -306,13 +310,29 @@ export const sendNewVerifyEmailLink = async ({ email, userId }) => {
     token: randomToken,
   });
 
+  //todo 1. To get the file data using fs module, without "utf-8" it will give buffer/binary data, so to convert it to string we use "utf-8".
+  const mjmlTemplate = await fs.readFile(
+    path.join(import.meta.dirname, "..", "emails", "verify-email.mjml"),
+    "utf-8"
+  );
+
+  //todo 2. How to use the EJS (Embedded JavaScript templating) library.
+  //    EJS provides a default 'render' method that replaces placeholders in the template content
+  //    with values from a data object. For example, it can replace <%= name %> with the value 'Sneha'
+  //    from the data object { name: 'Sneha' }.
+  //    - What does this method do: This method takes a file with template content and a data object,
+  //      and returns a new string with the dynamic data replaced.
+  const filledTemplate = ejs.render(mjmlTemplate, {
+    code: randomToken,
+    link: verifyEmailLink,
+  });
+
+  //todo 3. To convert the MJML to HTML
+  const htmlOutput = mjml2html(filledTemplate).html;
+
   await sendMail({
     to: email,
     subject: "Verify your email",
-    html: `
-        <h1>Click the below link to verify your email, or use the OTP.</h1>
-        <p>OTP for verification: <code>${randomToken}</code></p>
-        <a href="${verifyEmailLink}">Verify Email</a>
-      `,
+    html: htmlOutput,
   });
 };

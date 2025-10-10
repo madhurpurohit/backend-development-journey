@@ -2,6 +2,7 @@
 
 ## Table Of Contents
 
+0. [How to know user IP?](#0-how-to-know-user-ip)
 1. [What is connect-flash & express-session npm package, & why we use it](#1-what-is-connect-flash--express-session-npm-package--why-we-use-it)
 2. [How to make session using express-session](#2-how-to-make-session-using-express-session)
 3. [How to flash message using connect-flash](#3-how-to-flash-message-using-connect-flash)
@@ -19,9 +20,38 @@
 15. [How to use Transaction in DBMS?](#15-how-to-use-transaction-in-dbms)
 16. [What is URL API](#16-what-is-url-api)
 17. [What is Join in MySQL?](#17-what-is-join-in-mysql)
-18. []()
-19. []()
-20. []()
+18. [What is MJML?](#18-what-is-mjml)
+19. [How to pass dynamic values to MJML & convert it to HTML?](#19-how-to-pass-dynamic-values-to-mjml--convert-it-to-html)
+20. [What is Resend API?](#20-what-is-resend-api)
+21. []()
+22. []()
+23. []()
+24. []()
+25. []()
+
+---
+
+## 0. How to know user IP?
+
+For this we use request-ip package.
+
+1. Install it.
+
+```js
+npm i request-ip
+```
+
+[NPM Docs](https://www.npmjs.com/package/request-ip)
+
+2. Use it.
+
+```js
+import requestIp from "request-ip";
+
+app.use(requestIp.mw()); // This is a middleware function, which is used to get the user IP address.
+
+console.log(req.ip); // So when we need user ip address then we can use req.ip.
+```
 
 ---
 
@@ -245,6 +275,10 @@ Nodemailer is a popular, zero-dependency library for Node.js designed for sendin
 
 It's the tool you install in your project `npm install nodemailer` to handle the logic of creating and dispatching an email from your server.
 
+#### How to install it?
+
+[NPM Docs](https://www.npmjs.com/package/nodemailer)
+
 ---
 
 ## 11. What is Ethereal?
@@ -264,6 +298,8 @@ Ethereal is a free, "fake" SMTP service created by the same team behind Nodemail
 5. Nodemailer then gives you a **preview URL** in your console. When you open this URL, you can see exactly how your email looks in a web-based inbox.
 
 This is extremely useful because it lets you test your email-sending functionality perfectly—checking layouts, content, and attachments—without spamming real email accounts or needing to set up a dedicated development email server.
+
+[Official Docs](https://ethereal.email/)
 
 ---
 
@@ -619,21 +655,251 @@ RIGHT JOIN Orders ON Customers.customer_id = Orders.customer_id;
 
 ---
 
-## 18. 
+## 18. What is MJML?
+
+MJML, which stands for Mailjet Markup Language, is an open-source markup language designed specifically to make writing responsive emails easy.
+
+Think of it as a modern framework (like React or Vue, but for emails) that abstracts away the complexities of old-school email HTML.
+
+MJML provides a simple, clean, and component-based syntax. You write your email using easy-to-understand MJML components, and then the MJML engine compiles (or transpiles) your code into the complex, bulletproof HTML that works across all major email clients.
+
+In short: You write simple code, and MJML generates the complicated-but-compatible code for you.
+
+**What you write in MJML:**
+
+```html
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text>Hello</mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text>World</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+```
+
+**What MJML generates (a small snippet):**
+
+```html
+<div style="margin:0px auto;max-width:600px;">
+  <table
+    align="center"
+    border="0"
+    cellpadding="0"
+    cellspacing="0"
+    role="presentation"
+    style="width:100%;"
+  >
+    <tbody>
+      <tr>
+        <td
+          style="direction:ltr;font-size:0px;padding:20px 0;text-align:center;"
+        >
+          <div
+            class="mj-column-per-50 mj-outlook-group-fix"
+            style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;"
+          >
+            <table
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="vertical-align:top;"
+              width="100%"
+            >
+              <tbody>
+                <tr>
+                  <td
+                    align="left"
+                    style="font-size:0px;padding:10px 25px;word-break:break-word;"
+                  >
+                    <div
+                      style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#000000;"
+                    >
+                      Hello
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
+
+#### How to install it?
+
+[NPM Docs](https://www.npmjs.com/package/mjml)
+
+[Official Docs](https://mjml.io/)
+
+```bash
+npm install mjml
+```
+
+---
+
+## 19. How to pass dynamic values to MJML & convert it to HTML?
+
+**index.mjml** Code:-
+
+```js
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text>Hello <%= name %></mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+```
+
+**index.js** Code:-
+
+```js
+import mjml2html from "mjml";
+import fs from "fs/promises";
+import path from "path";
+import ejs from "ejs";
+
+const name = "Sneha";
+
+// 1. To get the file data using fs module, without "utf-8" it will give buffer/binary data, so to convert it to string we use "utf-8".
+const data = await fs.readFile(
+  path.join(import.meta.dirname, "index.mjml"),
+  "utf-8"
+);
+
+// 2. How to use the EJS (Embedded JavaScript templating) library.
+//    EJS provides a default 'render' method that replaces placeholders in the template content
+//    with values from a data object. For example, it can replace <%= name %> with the value 'Sneha'
+//    from the data object { name: 'Sneha' }.
+//    - What does this method do: This method takes a file with template content and a data object,
+//      and returns a new string with the dynamic data replaced.
+//    - What does this method return: This method returns a new string with the dynamic data replaced.
+const filledTemplate = ejs.render(data, {
+  name,
+});
+
+// 3. To convert MJML to HTML
+const html = mjml2html(filledTemplate).html;
+
+console.log(html);
+```
+
+---
+
+## 20. What is Resend API?
+
+Resend is an email API platform designed for developers to easily send transactional and marketing emails from their applications. It's a modern alternative to older services like SendGrid or Mailgun, with a strong focus on developer experience, reliability, and integration with modern web frameworks like React.
+
+Think of it as a specialized postal service for your app 📮. Instead of setting up your own complex mail servers, you just make a simple API call to Resend, and it handles the difficult work of ensuring your emails get delivered, tracked, and analyzed.
+
+#### Key Features of Resend
+
+1.  **Simple and Clean API**
+
+    Resend provides a straightforward REST API. Sending an email is as simple as making a POST request with a JSON payload containing the sender, recipient, subject, and content. This makes it incredibly fast to integrate into any application.
+
+2.  **React Email Integration**
+
+    This is Resend's standout feature. They are the creators of React Email, an open-source library that allows you to build and style your email templates using React components. This is a game-changer because:
+
+    - You can use familiar tools and a component-based workflow.
+
+    - It handles the conversion of your React code into the messy, table-based HTML that is required for email client compatibility.
+
+    - You can develop and preview your emails locally before sending.
+
+3.  **High Deliverability**
+
+    Resend is built on top of Amazon SES (Simple Email Service), which is known for its high deliverability rates. It also simplifies the process of setting up essential email authentication protocols like SPF, DKIM, and DMARC, which are crucial for preventing your emails from being marked as spam.
+
+4.  **Webhooks and Analytics**
+
+    You can set up webhooks to receive real-time notifications about the status of your emails, such as:
+
+    - `deliver`
+
+    - `opened`
+
+    - `clicked`
+
+    - `bounced`
+
+    - `complained (marked as spam)`
+
+This allows you to track user engagement and handle delivery issues programmatically. The dashboard also provides clean analytics to monitor your email performance.
+
+**In Short:** **Resend** is a developer-first platform that modernizes email sending, making it simpler, more reliable, and better integrated with contemporary development workflows, especially within the React ecosystem.
+
+#### How to install it?
+
+[NPM Docs](https://www.npmjs.com/package/resend/v/6.0.0)
+
+```bash
+npm install resend
+```
+
+---
+
+## 21. How It Works (A Simple Example)
+
+Here's a basic example of how you might send an email using the Resend Node.js SDK:
+
+```js
+import { Resend } from "resend";
+
+// Initialize Resend with your API key
+const resend = new Resend("your_api_key");
+
+async function sendWelcomeEmail() {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "Your App <onboarding@yourdomain.com>",
+      to: ["newuser@example.com"],
+      subject: "Welcome aboard!",
+      html: "<strong>Thanks for signing up!</strong>",
+      // Or use a React Email template
+      // react: <WelcomeEmailTemplate userName="Alex" />
+    });
+
+    if (error) {
+      return console.error({ error });
+    }
+
+    console.log("Email sent successfully:", data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+sendWelcomeEmail();
+```
+
+---
+
+## 22. 
 
 
 
 ---
 
-
-## 19. 
+## 23. 
 
 
 
 ---
 
-
-## 20. 
+## 24. 
 
 
 
