@@ -21,7 +21,8 @@ import {
   MILLISECONDS_PER_SECOND,
   REFRESH_TOKEN_EXPIRY,
 } from "../config/constants.js";
-import { sendMail } from "../lib/nodemailer.js";
+// import { sendMail } from "../lib/nodemailer.js";
+import { sendMail } from "../lib/verify-email-using-resend.js";
 
 export const getUserByEmail = async (email) => {
   const [user] = await db
@@ -141,7 +142,7 @@ export const refreshTokens = async (refreshToken) => {
 };
 
 export const clearUserSession = async (sessionId) => {
-  return await db.delete(sessionTable).where(eq(sessionTable.id, sessionId));
+  return db.delete(sessionTable).where(eq(sessionTable.id, sessionId));
 };
 
 export const authenticateUser = async ({ req, res, user, name, email }) => {
@@ -174,7 +175,7 @@ export const authenticateUser = async ({ req, res, user, name, email }) => {
 };
 
 export const getAllShortLinks = async (userId) => {
-  return await db
+  return db
     .select()
     .from(shortLinksTable)
     .where(eq(shortLinksTable.userId, userId));
@@ -288,14 +289,14 @@ export const findVerificationEmailToken = async ({ token, email }) => {
 };
 
 export const verifyUserEmailAndUpdate = async (email) => {
-  return await db
+  return db
     .update(userTable)
     .set({ isEmailValid: true })
     .where(eq(userTable.email, email));
 };
 
 export const clearVerifyEmailTokens = async (userId) => {
-  return await db
+  return db
     .delete(verifyEmailTokensTable)
     .where(eq(verifyEmailTokensTable.userId, userId));
 };

@@ -849,6 +849,18 @@ This allows you to track user engagement and handle delivery issues programmatic
 npm install resend
 ```
 
+### How to get API key?
+
+1. Login to Resend. [Open Link](https://resend.com/)
+
+2. Click on "API Keys" in the sidebar.
+
+3. Click on "Create API Key" button.
+
+4. Copy the generated API key.
+
+**NOTE:** If we don't have a Domain or Subdomain, than we can only send emails to a single email address, which we use to login to Resend, means we can't use this API key to send emails to multiple users. When we set Domain or Subdomain, then we can use this API key to send emails to multiple users.
+
 ---
 
 ## 21. How It Works (A Simple Example)
@@ -887,20 +899,14 @@ sendWelcomeEmail();
 
 ---
 
-## 22. 
-
-
+## 22.
 
 ---
 
-## 23. 
-
-
+## 23.
 
 ---
 
-## 24. 
-
-
+## 24.
 
 ---
