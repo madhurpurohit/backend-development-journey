@@ -1,20 +1,17 @@
 //* EJS by default search in views folder.
-import { sendMail } from "../lib/nodemailer.js";
 import {
   authenticateUser,
   clearUserSession,
   clearVerifyEmailTokens,
   comparePassword,
   createUser,
-  createVerifyEmailLink,
   findUserById,
   findVerificationEmailToken,
-  generateRandomToken,
   getAllShortLinks,
   // generateToken,
   getHashedPassword,
   getUserByEmail,
-  insertVerifyEmailToken,
+  sendNewVerifyEmailLink,
   verifyUserEmailAndUpdate,
 } from "../services/auth.services.js";
 import {
@@ -119,6 +116,9 @@ export const postRegister = async (req, res) => {
   // res.redirect("/login");
   await authenticateUser({ req, res, user, name, email });
 
+  //* Send verification email after registration.
+  await sendNewVerifyEmailLink({ email: email, userId: user.id });
+
   res.redirect("/");
 };
 
@@ -178,24 +178,7 @@ export const resendVerificationLink = async (req, res) => {
   const user = await findUserById(req.user.id);
   if (!user || user.isEmailValid) return res.redirect("/login");
 
-  const randomToken = generateRandomToken();
-
-  await insertVerifyEmailToken({ userId: req.user.id, token: randomToken });
-
-  const verifyEmailLink = await createVerifyEmailLink({
-    email: req.user.email,
-    token: randomToken,
-  });
-
-  await sendMail({
-    to: req.user.email,
-    subject: "Verify your email",
-    html: `
-      <h1>Click the below link to verify your email, or use the OTP.</h1>
-      <p>OTP for verification: <code>${randomToken}</code></p>
-      <a href="${verifyEmailLink}">Verify Email</a>
-    `,
-  });
+  await sendNewVerifyEmailLink({ email: req.user.email, userId: req.user.id });
 
   res.redirect("/verify-email");
 };

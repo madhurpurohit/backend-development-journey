@@ -17,6 +17,7 @@ import {
   MILLISECONDS_PER_SECOND,
   REFRESH_TOKEN_EXPIRY,
 } from "../config/constants.js";
+import { sendMail } from "../lib/nodemailer.js";
 
 export const getUserByEmail = async (email) => {
   const [user] = await db
@@ -293,4 +294,25 @@ export const clearVerifyEmailTokens = async (userId) => {
   return await db
     .delete(verifyEmailTokensTable)
     .where(eq(verifyEmailTokensTable.userId, userId));
+};
+
+export const sendNewVerifyEmailLink = async ({ email, userId }) => {
+  const randomToken = generateRandomToken();
+
+  await insertVerifyEmailToken({ userId, token: randomToken });
+
+  const verifyEmailLink = await createVerifyEmailLink({
+    email,
+    token: randomToken,
+  });
+
+  await sendMail({
+    to: email,
+    subject: "Verify your email",
+    html: `
+        <h1>Click the below link to verify your email, or use the OTP.</h1>
+        <p>OTP for verification: <code>${randomToken}</code></p>
+        <a href="${verifyEmailLink}">Verify Email</a>
+      `,
+  });
 };
