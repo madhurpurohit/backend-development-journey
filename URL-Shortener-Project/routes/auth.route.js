@@ -32,7 +32,12 @@ router
 
 router.route("/verify-email-token").get(authController.verifyEmailToken);
 
-router.route("/edit-profile").get(authController.getEditProfilePage).post(authController.postEditProfile);
+router
+  .route("/edit-profile")
+  .get(authController.getEditProfilePage)
+  .post(authController.postEditProfile);
+
+router.route("/change-password").get(authController.getChangePasswordPage).post(authController.postChangePassword);
 
 router.route("/logout").get(authController.logoutUser);
 

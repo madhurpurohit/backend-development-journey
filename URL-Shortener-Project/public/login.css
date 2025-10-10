@@ -1,4 +1,5 @@
 :root {
+  --white-color: #fff;
   --page-background: #f0f2f5;
   --card-background: #ffffff;
   --text-color: #1c1c1c;
@@ -167,21 +168,41 @@ main {
   font-size: 0.9rem;
 }
 
+.forgot-password a {
+  text-decoration: none;
+  font-weight: 800;
+  transition: color 0.2s linear;
+  color: var(--primary-color);
+}
+
+.forgot-password a:hover {
+  color: var(--primary-color-hover);
+}
+
 .create-account a {
   color: var(--subtle-text-color);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s;
+  transition: color 0.2s;
 }
 
 .create-account a:hover {
-  color: var(--primary-color);
+  color: var(--white-color);
+}
+
+.hr-line {
+  width: 90%;
+  height: 1px;
+  margin: 20px auto;
+  text-align: center;
+  background-color: var(--subtle-text-color);
 }
 
 .social-login {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .social-login span {
@@ -190,7 +211,7 @@ main {
 
 .social-icons {
   display: flex;
-  gap: 10px;
+  gap: 5px;
 }
 
 .social-icon {
@@ -198,21 +219,17 @@ main {
   height: 30px;
   border-radius: 5px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s linear, color 0.2s linear;
 }
 
 .social-icon:hover {
+  color: white;
   transform: scale(1.1);
 }
 
-.icon-blue {
-  background-color: var(--social-icon-facebook);
-}
-.icon-lightblue {
-  background-color: var(--social-icon-twitter);
-}
-.icon-red {
-  background-color: var(--social-icon-google);
+.github,
+.google {
+  font-size: 25px;
 }
 
 @media (max-width: 800px) {

@@ -341,3 +341,12 @@ export const sendNewVerifyEmailLink = async ({ email, userId }) => {
 export const updateUserByName = async ({ userId, name }) => {
   return db.update(userTable).set({ name }).where(eq(userTable.id, userId));
 };
+
+export const updateUserPassword = async ({ userId, password }) => {
+  const hashPassword = await getHashedPassword(password);
+
+  return await db
+    .update(userTable)
+    .set({ password: hashPassword })
+    .where(eq(userTable.id, userId));
+};

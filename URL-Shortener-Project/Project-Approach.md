@@ -23,9 +23,9 @@
 18. [What is MJML?](#18-what-is-mjml)
 19. [How to pass dynamic values to MJML & convert it to HTML?](#19-how-to-pass-dynamic-values-to-mjml--convert-it-to-html)
 20. [What is Resend API?](#20-what-is-resend-api)
-21. []()
-22. []()
-23. []()
+21. [How Resend API Works (A Simple Example)](#21-how-resend-api-works-a-simple-example)
+22. [In Zod Validation what is refine method?](#22-in-zod-validation-what-is-refine-method)
+23. [What are the steps on How to change password?](#23-what-are-the-steps-on-how-to-change-password)
 24. []()
 25. []()
 
@@ -863,7 +863,7 @@ npm install resend
 
 ---
 
-## 21. How It Works (A Simple Example)
+## 21. How Resend API Works (A Simple Example)
 
 Here's a basic example of how you might send an email using the Resend Node.js SDK:
 
@@ -899,14 +899,71 @@ sendWelcomeEmail();
 
 ---
 
-## 22.
+## 22. In Zod Validation what is refine method?
+
+.refine(callbackFunction), this will check the value of the email if it doesn't end with @gmail.com than it will throw an error. This error message will be shown to user. In this we can also pass path:[], if we want to show error message at specific path.
+
+```js
+import { z } from "zod";
+
+const schema = z.object({
+  email: z
+    .string()
+    .email()
+    .refine((email) => email.endsWith("@gmail.com"), {
+      message: "Email must end with @gmail.com",
+    }),
+});
+```
 
 ---
 
-## 23.
+## 23. What are the steps on How to change password?
+
+1. **Render Change Password Page**
+
+   - If the user is not logged in, redirect them to the home page (/).
+
+   - Otherwise, render the change password form with any flash error messages.
+
+2. **Handle Change Password Request**
+
+   - Check if the user is logged in; if not, redirect to (/).
+
+   - Validate the request body using verifyPasswordSchema.safeParse(req.body).
+
+   - If validation fails, store the first error message in flash and redirect back to /change-password.
+
+3. **Verify User and Password**
+
+   - Find the user by their ID.
+
+   - If the user does not exist, show an error and redirect.
+
+   - Compare the provided current password with the stored password.
+
+If the current password is incorrect, show an error and redirect.
+
+4. **Update the Password**
+
+   - If everything is correct, update the user's password with the new password.
+
+   - Redirect the user to their profile page (/profile).
 
 ---
 
 ## 24.
+
+---
+
+## 25.
+
+---
+
+## 26.
+
+---
+
+## 27.
 
 ---

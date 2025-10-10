@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/images/Logo.png" />
     <title>Sign In Page</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/material-design-iconic-font@2.2.0/dist/css/material-design-iconic-font.min.css"
+    />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -54,22 +60,31 @@
             <p class="flash-error"><%= error %></p>
             <% }) %> <% } %>
 
-            <div class="remember-me">
+            <!-- <div class="remember-me">
               <input type="checkbox" id="remember" />
               <label for="remember">Remember me</label>
-            </div>
+            </div> -->
             <button type="submit" class="login-btn">Log in</button>
           </form>
           <div class="card-footer">
+            <div class="forgot-password">
+              <a href="/forgot-password">Forgot Password?</a>
+            </div>
             <div class="create-account">
               <a href="/register">Create an account</a>
             </div>
-            <div class="social-login">
-              <span>Or login with</span>
-              <div class="social-icons">
-                <div class="social-icon icon-blue"></div>
-                <div class="social-icon icon-lightblue"></div>
-                <div class="social-icon icon-red"></div>
+          </div>
+
+          <div class="hr-line"></div>
+
+          <div class="social-login">
+            <span>Or login with</span>
+            <div class="social-icons">
+              <div class="social-icon github">
+                <i class="zmdi zmdi-github"></i>
+              </div>
+              <div class="social-icon google">
+                <i class="zmdi zmdi-google"></i>
               </div>
             </div>
           </div>
