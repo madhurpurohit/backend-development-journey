@@ -337,3 +337,7 @@ export const sendNewVerifyEmailLink = async ({ email, userId }) => {
     html: htmlOutput,
   });
 };
+
+export const updateUserByName = async ({ userId, name }) => {
+  return db.update(userTable).set({ name }).where(eq(userTable.id, userId));
+};

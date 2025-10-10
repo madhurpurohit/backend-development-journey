@@ -32,6 +32,8 @@ router
 
 router.route("/verify-email-token").get(authController.verifyEmailToken);
 
+router.route("/edit-profile").get(authController.getEditProfilePage).post(authController.postEditProfile);
+
 router.route("/logout").get(authController.logoutUser);
 
 export const authRoutes = router;
