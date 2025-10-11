@@ -1,10 +1,13 @@
 //* EJS by default search in views folder.
+import { fi } from "zod/v4/locales";
 import {
   authenticateUser,
   clearUserSession,
   clearVerifyEmailTokens,
   comparePassword,
+  createResetPasswordLink,
   createUser,
+  findUserByEmail,
   findUserById,
   findVerificationEmailToken,
   getAllShortLinks,
@@ -17,12 +20,14 @@ import {
   verifyUserEmailAndUpdate,
 } from "../services/auth.services.js";
 import {
+  forgotPasswordSchema,
   loginUserSchema,
   registerUserSchema,
   verifyEmailSchema,
   verifyPasswordSchema,
   verifyUserSchema,
 } from "../validation/auth.validation.js";
+import { getHtmlFromMjmlTemplate } from "../lib/get-html-from-mjml-template.js";
 
 export const getRegisterPage = (req, res) => {
   if (req.user) return res.redirect("/");
@@ -270,4 +275,39 @@ export const postChangePassword = async (req, res) => {
   await updateUserPassword({ userId: user.id, password: data.newPassword });
 
   return res.redirect("/profile");
+};
+
+export const getForgotPasswordPage = (req, res) => {
+  return res.render("auth/forgot-password", {
+    formSubmitted: req.flash("formSubmitted")[0],
+    errors: req.flash("errors"),
+  });
+};
+
+export const postForgotPassword = async (req, res) => {
+  const { data, error } = forgotPasswordSchema.safeParse(req.body);
+
+  if (error) {
+    const errorMessage = error.issues.map((err) => err.message);
+    req.flash("errors", errorMessage[0]);
+    return res.redirect("reset-password");
+  }
+
+  const user = await findUserByEmail(data.email);
+
+  if (user) {
+    const createPasswordLink = await createResetPasswordLink({
+      userId: user.id,
+    });
+
+    const html = await getHtmlFromMjmlTemplate("reset-password-email", {
+      name: user.name,
+      link: createPasswordLink,
+    });
+
+    return res.redirect("/login");
+  }
+
+  req.flash("errors", "Email is not registered, or invalid.");
+  return res.redirect("/reset-password");
 };

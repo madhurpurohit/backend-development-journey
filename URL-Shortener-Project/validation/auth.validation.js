@@ -1,5 +1,5 @@
 import { error } from "console";
-import z from "zod";
+import z, { email } from "zod";
 
 const nameSchema = z
   .string()
@@ -7,11 +7,14 @@ const nameSchema = z
   .min(3, { message: "Name must be at least 3 characters long." })
   .max(100, { message: "Name must be no more than 100 characters." });
 
+const emailSchema = z
+  .string()
+  .trim()
+  .email({ message: "Please enter a valid Email address." })
+  .max(100, { message: "Email must be no more than 100 characters." });
+
 export const loginUserSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .email({ message: "Please enter a valid Email address." }),
+  email: emailSchema,
 
   password: z
     .string()
@@ -59,3 +62,7 @@ export const verifyPasswordSchema = z
     message: "Passwords do not match", // Custom error message, which will be shown in the path of the error.
     path: ["confirmPassword"], // Error will be associated with `confirmPassword` field.
   });
+
+export const forgotPasswordSchema = z.object({
+  email: emailSchema,
+});

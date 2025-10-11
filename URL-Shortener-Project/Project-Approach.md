@@ -26,7 +26,7 @@
 21. [How Resend API Works (A Simple Example)](#21-how-resend-api-works-a-simple-example)
 22. [In Zod Validation what is refine method?](#22-in-zod-validation-what-is-refine-method)
 23. [What are the steps on How to change password?](#23-what-are-the-steps-on-how-to-change-password)
-24. []()
+24. [Steps on How to Post Forgot Password?](#24-steps-on-how-to-post-forgot-password)
 25. []()
 
 ---
@@ -952,7 +952,27 @@ If the current password is incorrect, show an error and redirect.
 
 ---
 
-## 24.
+## 24. Steps on How to Post Forgot Password?
+
+1. **User enters email** on the Forgot Password page and submits the form.
+
+2. **Validate the email input**
+
+   - If the email is invalid, show an error and redirect back to the Forgot Password page.
+
+3. **Check if the user exists** in the database using their email.
+
+   - If the user **does exist:**
+
+     - Generate a **reset password link**.
+
+     - Create an **email template** with the reset link.
+
+     - **Send an email** to the user with the reset link.
+
+4. **Show a success message** and redirect back to the Forgot Password page.
+
+   - Now, the user can check their email and reset their password using the link.
 
 ---
 

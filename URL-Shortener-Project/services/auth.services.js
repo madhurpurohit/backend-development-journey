@@ -11,6 +11,7 @@ import path from "path";
 import mjml2html from "mjml";
 
 import {
+  passwordResetTokensTable,
   sessionTable,
   shortLinksTable,
   userTable,
@@ -349,4 +350,35 @@ export const updateUserPassword = async ({ userId, password }) => {
     .update(userTable)
     .set({ password: hashPassword })
     .where(eq(userTable.id, userId));
+};
+
+export const findUserByEmail = async (email) => {
+  const [user] = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.email, email));
+
+  return user;
+};
+
+export const createResetPasswordLink = async ({ userId }) => {
+  //todo 1. Generate a random token
+  const randomToken = crypto.randomBytes(32).toString("hex"); //* It will generate 64 character long string because hexadecimal, each digit can represent 4 bits. Therefore, 1 byte (8 bits) is represented by 2 hex digits.
+
+  //todo 2. Hash the token
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(randomToken)
+    .digest("hex");
+  console.log("hashedToken: ", tokenHash);
+
+  //todo 3. Clear the user previous data
+  await db
+    .delete(passwordResetTokensTable)
+    .where(eq(passwordResetTokensTable.userId, userId));
+
+  //todo 4. Now we need to insert userId, hashedToken
+  await db.insert(passwordResetTokensTable).values({ userId, tokenHash });
+
+  return `${process.env.FRONTEND_URL}/forgot-password/${tokenHash}`;
 };

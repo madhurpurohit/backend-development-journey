@@ -44,6 +44,19 @@ export const verifyEmailTokensTable = mysqlTable("verifyEmailToken", {
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
 });
 
+export const passwordResetTokensTable = mysqlTable("password_reset_token", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" })
+    .unique(),
+  tokenHash: text("token_hash").notNull(),
+  expiresAt: timestamp("expires_at")
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP + INTERVAL 1 HOUR)`),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const userTable = mysqlTable("users", {
   id: int().primaryKey().autoincrement(),
   name: varchar({ length: 255 }).notNull(),
