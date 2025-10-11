@@ -1,6 +1,7 @@
 //* EJS by default search in views folder.
 import {
   authenticateUser,
+  clearResetPasswordToken,
   clearUserSession,
   clearVerifyEmailTokens,
   comparePassword,
@@ -12,6 +13,7 @@ import {
   getAllShortLinks,
   // generateToken,
   getHashedPassword,
+  getResetPasswordToken,
   getUserByEmail,
   sendNewVerifyEmailLink,
   updateUserByName,
@@ -24,6 +26,7 @@ import {
   registerUserSchema,
   verifyEmailSchema,
   verifyPasswordSchema,
+  verifyResetPasswordSchema,
   verifyUserSchema,
 } from "../validation/auth.validation.js";
 import { getHtmlFromMjmlTemplate } from "../lib/get-html-from-mjml-template.js";
@@ -317,4 +320,49 @@ export const postForgotPassword = async (req, res) => {
 
   req.flash("errors", "Email is not registered, or invalid.");
   return res.redirect("/reset-password");
+};
+
+export const getResetPasswordPage = async (req, res) => {
+  const { token } = req.params;
+
+  const tokenValid = await getResetPasswordToken(token);
+
+  if (!tokenValid) {
+    return res.render("auth/wrong-reset-password-token");
+  }
+
+  return res.render("auth/reset-password", {
+    formSubmitted: req.flash("formSubmitted")[0],
+    errors: req.flash("errors"),
+    token,
+  });
+};
+
+export const postResetPassword = async (req, res) => {
+  const { token } = req.params;
+
+  const tokenValid = await getResetPasswordToken(token);
+
+  if (!tokenValid) {
+    req.flash("errors", "Invalid Reset Password Token");
+    return res.render("auth/wrong-reset-password-token");
+  }
+
+  const { data, error } = verifyResetPasswordSchema.safeParse(req.body);
+
+  if (error) {
+    const errorMessage = error.issues.map((err) => err.message);
+    req.flash("errors", errorMessage[0]);
+    return res.redirect(`/reset-password/${token}`);
+  }
+
+  const { newPassword } = data;
+
+  const user = await findUserById(tokenValid.userId);
+
+  await clearResetPasswordToken(user.id);
+
+  await updateUserPassword({ userId: user.id, password: newPassword });
+
+  return res.redirect("/login");
 };

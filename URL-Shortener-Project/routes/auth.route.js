@@ -47,6 +47,11 @@ router
   .get(authController.getForgotPasswordPage)
   .post(authController.postForgotPassword);
 
+router
+  .route("/reset-password/:token")
+  .get(authController.getResetPasswordPage)
+  .post(authController.postResetPassword);
+
 router.route("/logout").get(authController.logoutUser);
 
 export const authRoutes = router;

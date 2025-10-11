@@ -27,7 +27,12 @@
 22. [In Zod Validation what is refine method?](#22-in-zod-validation-what-is-refine-method)
 23. [What are the steps on How to change password?](#23-what-are-the-steps-on-how-to-change-password)
 24. [Steps on How to Post Forgot Password?](#24-steps-on-how-to-post-forgot-password)
-25. []()
+25. [How to Reset Password?](#25-how-to-reset-password)
+26. []()
+27. []()
+28. []()
+29. []()
+30. []()
 
 ---
 
@@ -976,14 +981,52 @@ If the current password is incorrect, show an error and redirect.
 
 ---
 
-## 25.
+## 25. How to Reset Password?
+
+1. Extract password reset token from request parameters.
+
+2. Validate token authenticity, expiration, and match with a previously issued token.
+
+3. If valid, get new password from request body and validate using a schema (e.g., Zod) for complexity.
+
+4. Identify user ID linked to the token.
+
+5. Invalidate all existing reset tokens for that user ID.
+
+6. Hash the new password with a secure algorithm .
+
+7. Update the user's password in the database with the hashed version.
+
+8. Redirect to login page or return a success response.
 
 ---
 
-## 26.
+## 26. 
+
+
 
 ---
 
-## 27.
+## 27. 
+
+
+
+---
+
+## 28. 
+
+
+
+---
+
+## 29. 
+
+
+
+---
+
+## 30. 
+
+
 
 ---

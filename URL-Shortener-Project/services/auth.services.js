@@ -370,7 +370,7 @@ export const createResetPasswordLink = async ({ userId }) => {
     .createHash("sha256")
     .update(randomToken)
     .digest("hex");
-  console.log("hashedToken: ", tokenHash);
+  // console.log("hashedToken: ", tokenHash);
 
   //todo 3. Clear the user previous data
   await db
@@ -380,5 +380,27 @@ export const createResetPasswordLink = async ({ userId }) => {
   //todo 4. Now we need to insert userId, hashedToken
   await db.insert(passwordResetTokensTable).values({ userId, tokenHash });
 
-  return `${process.env.FRONTEND_URL}/forgot-password/${tokenHash}`;
+  return `${process.env.FRONTEND_URL}/reset-password/${randomToken}`;
+};
+
+export const getResetPasswordToken = async (token) => {
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+  const [data] = await db
+    .select()
+    .from(passwordResetTokensTable)
+    .where(
+      and(
+        eq(passwordResetTokensTable.tokenHash, tokenHash),
+        gte(passwordResetTokensTable.expiresAt, sql`CURRENT_TIMESTAMP`)
+      )
+    );
+
+  return data;
+};
+
+export const clearResetPasswordToken = async (userId) => {
+  return db
+    .delete(passwordResetTokensTable)
+    .where(eq(passwordResetTokensTable.userId, userId));
 };
