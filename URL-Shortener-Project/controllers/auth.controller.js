@@ -1,5 +1,4 @@
 //* EJS by default search in views folder.
-import { fi } from "zod/v4/locales";
 import {
   authenticateUser,
   clearUserSession,
@@ -28,6 +27,7 @@ import {
   verifyUserSchema,
 } from "../validation/auth.validation.js";
 import { getHtmlFromMjmlTemplate } from "../lib/get-html-from-mjml-template.js";
+import { sendMail } from "../lib/verify-email-using-resend.js";
 
 export const getRegisterPage = (req, res) => {
   if (req.user) return res.redirect("/");
@@ -305,7 +305,14 @@ export const postForgotPassword = async (req, res) => {
       link: createPasswordLink,
     });
 
-    return res.redirect("/login");
+    sendMail({
+      to: user.email,
+      subject: "Reset Your Password",
+      html,
+    });
+
+    req.flash("formSubmitted", true);
+    return res.redirect("/reset-password");
   }
 
   req.flash("errors", "Email is not registered, or invalid.");
