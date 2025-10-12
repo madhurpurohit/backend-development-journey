@@ -28,10 +28,10 @@
 23. [What are the steps on How to change password?](#23-what-are-the-steps-on-how-to-change-password)
 24. [Steps on How to Post Forgot Password?](#24-steps-on-how-to-post-forgot-password)
 25. [How to Reset Password?](#25-how-to-reset-password)
-26. []()
-27. []()
-28. []()
-29. []()
+26. [How Login with Google or OAuth Works?](#26-how-login-with-google-or-oauth-works)
+27. [What is CSRF Attacks?](#27-what-is-csrf-attacks)
+28. [What is PKCE?](#28-what-is-pkce)
+29. [What is Arctic & Code Part](#29-what-is-arctic)
 30. []()
 
 ---
@@ -1001,31 +1001,435 @@ If the current password is incorrect, show an error and redirect.
 
 ---
 
-## 26. 
+## 26. How Login with Google or OAuth Works?
 
+1.  For this we have do one things that is **Initial Setup**:
 
+    - Register app with OAuth provider to get Client ID, and Client Secret.
+
+      - The **OAuth Client ID** is a unique identifier issued by Google when we register our app on the Google Cloud Console. It tells Google: "Hey, I'm a legit app and I want to request to user info (like name, email) with the user's permission".
+
+    - Configure authorized redirect URI: https://myapp.com/auth/callback
+
+2.  **Authentication Flow**:
+
+    - User clicks "Sign in with Google" button.
+
+    - Frontend Request OAuth Login to Node.js Server.
+
+    - Before it Redirects to OAuth Provider we have to do some task, For this we can use **Arctic library**:
+
+      i. Generate random state parameter to prevent CSRF.
+
+      ii. Generate code_verifier (random string 43-128 chars).
+
+      iii. Compute code_challenge = base64URL(SHA256(code_verifier)).
+
+      iv. Store state & code_verifier in cookies.
+
+      v. Generate authorization URL using these information for our OAuth.
+
+      vi. Redirect user to the authorized URL.
+
+3.  **Redirect to Frontend Flow**:
+
+    - It will return authorization URL.
+
+      - **Example:** https://accounts.google.com/o/oauth2/v2/auth?client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&response_type=code&scope= profile email&state=STATE&code_challenge=CODE_CHALLENGE&code_challenge_method=S256
+
+4.  **5 calls back**:
+
+    i. It arrives at provider login page.
+
+    ii. It present Login Form & permission screen
+
+    iii. Enters credentials & approves permissions.
+
+    iv. It will redirect to callback URL with code & state
+
+    - **Example:** https://myapp.com/auth/callback?code=CODE&state=STATE
+
+    v. Now this code & state is send to server.
+
+5.  **Communication b/w Server & OAuth Provider:**
+
+    i. Verify state matches the state stored in cookies.
+
+    ii. It will POST to token endpoint.
+
+    - **Example:** https://oauth2.googleapis.com/token?grant_type=authorization_code&client_id=CLIENT_ID&code=CODE&code_verifier=(Original random string stored in cookie)
+
+      Headers:
+
+          Authorization: Basic base64(client_id:client_secret)
+
+    iii. It will return tokens (access_token, refresh_token, expiration) to server.
+
+    iv. Server request user data with access_token to OAuth Provider.
+
+    v. OAuth Provider returns user profile information to server.
+
+6.  **Get User Profile**:
+
+    i. Create/update user account with profile data.
+
+    ii. Link the user if needed.
+
+    iii. Generate session for the user.
+
+7.  Now server will return success response with session token to Frontend.
+
+8.  Frontend will redirect to application dashboard.
+
+#### Security Considerations
+
+1. All communications use HTTPS.
+
+2. Client secret & tokens stored securely.
+
+3. State parameter validation prevents CSRF attacks.
+
+4. PKCE (code_verifier/challenge) prevents authorization code interception.
 
 ---
 
-## 27. 
+## 27. What is CSRF Attacks?
 
+A Cross-Site Request Forgery (CSRF) attack tricks an authenticated user into unknowingly submitting a malicious request to a web application. The primary prevention method is validating a unique state parameter for each session. PKCE (Proof Key for Code Exchange) is a security extension that prevents authorization code interception attacks, especially in public clients like mobile apps.
 
+A CSRF attack (sometimes called a "one-click attack" or "session riding") is an exploit where an attacker tricks a logged-in user into executing an unwanted action on a web application. The application trusts the request because it comes from the user's browser with their valid session cookies, but the user did not intend to perform the action.
+
+**Think of it like this:** You are logged into your online banking site. An attacker sends you an email with a link to a "cute cat picture." When you click the link, it loads the picture, but in the background, it also sends a hidden request to your bank's server to transfer money to the attacker's account. Your bank's server sees a valid request coming from your browser and processes it.
+
+#### How a CSRF Attack Works in OAuth
+
+In an OAuth context, a CSRF attack can trick a user into authorizing an attacker's account instead of their own.
+
+1. **Attacker Initiates:** The attacker starts the OAuth login process for their own account on a malicious client application.
+
+2. **Attacker Intercepts URL:** The authorization server redirects the attacker to the login page with a URL like `https://auth-server.com/auth?client_id=...&state=ATTACKER_STATE`. The attacker copies this URL.
+
+3. **Victim is Tricked:** The attacker embeds this malicious URL in an innocent-looking link or image and sends it to the victim (e.g., via email or a chat message).
+
+4. **Victim Clicks:** The victim, who is already logged into their account on the authorization server (like Google or Facebook), clicks the link.
+
+5. **Malicious Authorization:** The victim's browser follows the URL. Since they are already logged in, the authorization server grants access and sends an authorization code back to the attacker's application. The victim has now unknowingly linked their session on the client application to the attacker's account on the authorization server.
+
+#### How to Prevent CSRF Attacks
+
+The most common prevention is using the state parameter, as you mentioned.
+
+1. **Generate a Unique State:** When the legitimate application starts the OAuth flow, it must generate a unique, unguessable, and random string. This is the `state` parameter.
+
+2. **Store the State:** The application stores this `state` value in the user's session storage (e.g., a server-side session or a secure, HTTP-only cookie).
+
+3. **Send the State**: The application includes this `state` parameter in the authorization request URL sent to the authorization server.
+
+4. **Receive and Verify:** After the user authorizes the request, the authorization server sends the `state` parameter back to the application along with the authorization code. The application must then compare the `state` value it received with the value it stored in the user's session.
+
+   - If they match, the request is legitimate, and the flow can continue.
+
+   - If they do not match, the request is likely a CSRF attack, and the application must reject it.
 
 ---
 
-## 28. 
+## 28. What is PKCE?
 
+PKCE (pronounced "pixy") is a security extension for the OAuth 2.0 authorization code flow. Its purpose is to prevent authorization code interception attacks.
 
+This attack is a risk for public clients like native mobile apps and single-page web applications (SPAs) because they cannot securely store a client_secret. An attacker on the same device could potentially intercept the authorization code as it's returned to the app and use it to get an access token.
+
+#### How PKCE Works
+
+PKCE adds a dynamic, one-time secret to the flow that proves the same client that started the request is the one completing it.
+
+1. **Client Creates a Verifier:** Before starting the flow, your application creates a cryptographically random string called the `code_verifier`.
+
+2. **Client Creates a Challenge:** The application then creates a transformed version of the verifier called the `code_challenge`. This transformation is typically a SHA256 hash.
+
+3. **Authorization Request:** The application sends the `code_challenge` and the transformation method (`code_challenge_method='S256'`) to the authorization server in the initial request. The server stores this challenge.
+
+4. **Authorization Grant:** The user logs in and grants permission. The server sends back a temporary `authorization_code`.
+
+5. **Token Request & Verification:** The application requests the access token by sending the `authorization_code` and the original, plain-text `code_verifier` it created in step 1.
+
+6. **Server Validation:** The server hashes the `code_verifier` it just received using the same method (S256) and compares the result to the `code_challenge` it stored earlier.
+
+   - If they match, the server knows the request is coming from the legitimate client and issues the access token.
+
+   - If they do not match, the request is rejected.
+
+Even if an attacker intercepts the `authorization_code` in transit, it's useless to them because they do not have the original `code_verifier` secret needed to exchange it for an access token.
 
 ---
 
-## 29. 
+## 29. What is Arctic?
 
+Arctic is a collection of OAuth 2.0 clients for popular providers. Only the authorization code flow is supported. Built on top of the Fetch API, it's light weight, fully-typed, and runtime-agnostic.
 
+#### Code Part (getGoogleLoginPage)
+
+```js
+import { generateState, generateCodeVerifier } from "arctic";
+import { google } from "../lib/auth/google.js";
+
+// Generate random state
+const state = generateState();
+
+// Generate code_verifier (random string 43-128 chars)
+const codeVerifier = generateCodeVerifier();
+
+// Create authorization URL
+const url = google.createAuthorizationUrl(state, codeVerifier, [
+  "openid", // this is called scopes, here we are giving openid, and profile
+  "profile", // openid gives tokens if needed, and profile gives user information
+  // we are telling google about the information that we require from user.
+  "email",
+]);
+```
+
+## What's happening in above Code?
+
+We're telling Google, "Here is my app's Client ID, & here's the kind of information I want from the user. Please show the login screen.
+
+**openid** is part of the OpenID Connect Protocol, which is built on top of OAuth 2.0.
+
+#### Why do we use it?
+
+If we include the openid scope, it tells Google:
+
+"Hey, I want the user's identity! Give me an ID token that proves who they are."
+
+This token (called the ID Token) will contain. User's Google ID (a unique number). Email, Name, Profile Picture, And more...
+
+Without openid, we don't get ID token (only access token).
+
+**After that, this below code will come:**
+
+```js
+const AUTH_EXCHANGE_EXPIRY = 10 * 60 * 1000; // 10 minutes
+
+const cookieConfig = {
+  httpOnly: true,
+  secure: true,
+  maxAge: OAUTH_EXCHANGE_EXPIRY,
+  sameSite: "lax", // This is such that when Google redirects to our website, cookies are maintained.
+};
+
+res.cookies("google_auth_state", state, cookieConfig);
+res.cookies("google_code_verifier", codeVerifier, cookieConfig);
+
+res.redirect(url.toString());
+```
+
+Go to lib folder & create auth folder inside this create google.js file & paste the below code:
+
+```js
+import { Google } from "arctic";
+import { env } from "../config/env.js";
+
+export const google = new Google(
+  env.GOOGLE_CLIENT_ID,
+  env.GOOGLE_CLIENT_SECRET,
+  "http://localhost:4000/google/callback" // We will create this route to verify after login.
+);
+```
+
+**BreakDown:**
+
+1. env.GOOGLE_CLIENT_ID: This is our app's public ID that we get from Google Cloud Console. It tells Google which app is trying to login.
+
+2. env.,GOOGLE_CLIENT_SECRET: This is our app's secret key that should be kept private. It's used in the backend to prove that the login request is legit & secure.
+
+3. "http://localhost:4000/google/callback" : This is called the Redirect URI. Super Important!
+
+After a user logs in successfully whit Google, Google will send them (and a special code) to this URL.
+
+**env.js File**
+
+```js
+import {z} from "zod;
+
+const envSchema = z.object({
+  RESEND_API_KEY: z.string().min(1),
+  GOOGLE_CLIENT_ID: z.string().min(1),
+  GOOGLE_CLIENT_SECRET: z.string().min(1),
+});
+
+export const env = envSchema.parse(process.env);
+```
+
+#### Code Part (getGoogleLoginCallback)
+
+```js
+import { google } from "../lib/auth/google.js";
+import { validateAuthorizationCode, decodeIdToken } from "arctic";
+
+export const getGoogleLoginCallback = async (req, res) => {
+  // Google redirects with code, and state in query params. We will use code to find out the user.
+  const { code, state } = req.query;
+
+  const { google_code_verifier: codeVerifier, google_auth_state: storedState } =
+    req.cookies;
+
+  if (
+    !code ||
+    !state ||
+    !codeVerifier ||
+    !storedState ||
+    state !== storedState
+  ) {
+    req.flash(
+      "errors",
+      "Couldn't login with Google because of invalid login attempt. Please try again!"
+    );
+    return res.redirect("/login");
+  }
+
+  let token;
+  try {
+    // Arctic will verify the code given by Google with code verifier internally.
+    token = await google.validateAuthorizationCode(code, codeVerifier);
+  } catch (error) {
+    req.flash(
+      "errors",
+      "Couldn't login with Google because of invalid login attempt. Please try again!"
+    );
+    return res.redirect("/login");
+  }
+
+  const claim = decodeIdToken(token.idToken());
+  const { sub: googleUserId, name, email } = claim;
+
+  // There are few things that we should do.
+  // Condition 1: User already exists with Google's OAuth linked.
+  // Condition 2: User already exists with the same email but Google's OAuth isn't linked.
+  // Condition 3: User doesn't exist.
+
+  // If user is already linked than we will get the user.
+  let user = await getUserWithOauthId({
+    provider: "google",
+    email,
+  });
+
+  // if user exists but user is not linked with oauth
+  if (user && !user.providerAccountId) {
+    await linkUserWithOauth({
+      userId: user.id,
+      provider: "google",
+      providerAccountId: googleUserId,
+    });
+  }
+
+  // if user doesn't exist
+  if (!user) {
+    user = await createUserWithOauth({
+      name,
+      email,
+      provider: "google",
+      providerAccountId: googleUserId,
+    });
+  }
+  await authenticateUser({ req, res, user, name, email });
+
+  res.redirect("/");
+};
+```
+
+#### Code Part (auth.service.js) [getUserWithOauthId, linkUserWithOauth, createUserWithOauth]
+
+```js
+export async function getUserWithOauthId({ email, provider }) {
+  const [user] = await db
+    .select({
+      id: usersTable.id,
+      name: usersTable.name,
+      email: usersTable.email,
+      isEmailValid: usersTable.isEmailValid,
+      providerAccountId: oauthAccountsTable.providerAccountId,
+      provider: oauthAccountsTable.provider,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.email, email))
+    .leftJoin(
+      oauthAccountsTable,
+      and(
+        eq(oauthAccountsTable.provider, provider),
+        eq(oauthAccountsTable.userId, usersTable.id)
+      )
+    );
+
+  return user;
+}
+
+export async function linkUserWithOauth({
+  userId,
+  provider,
+  providerAccountId,
+}) {
+  await db.insert(oauthAccountsTable).values({
+    userId,
+    provider,
+    providerAccountId,
+  });
+}
+
+export async function createUserWithOauth({
+  name,
+  email,
+  provider,
+  providerAccountId,
+}) {
+  const user = await db.transaction(async (trx) => {
+    const [user] = await trx
+      .insert(usersTable)
+      .values({
+        email,
+        name,
+        // password: "",
+        isEmailValid: true, // we know that google's email are valid
+      })
+      .$returningId();
+
+    await trx.insert(oauthAccountsTable).values({
+      provider,
+      providerAccountId,
+      userId: user.id,
+    });
+
+    return {
+      id: user.id,
+      name,
+      email,
+      isEmailValid: true, // not necessary
+      provider,
+      providerAccountId,
+    };
+  });
+
+  return user;
+}
+```
+
+Here We get an error for password field, because if the user login first time or login with Google, than we register user on userTable & oAuthTable. So, if we do login with Google than no problem, but if user manually login than problem occur. So to prevent this we go to schema.js & userTable & remove .notNull() from password field. Than this will didn't give any error.
+
+& than we go to postLoginPage function in auth.controller.js & add the below code before comparePassword.
+
+```js
+if (!user.password) {
+  // database hash password
+  // if password is null
+  req.flash(
+    "errors",
+    "You have created account using social login. Please login with your social account."
+  );
+  res.redirect("/login");
+}
+```
 
 ---
 
-## 30. 
+## 30. How to implement Login with GitHub?
 
 
 

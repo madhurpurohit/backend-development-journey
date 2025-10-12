@@ -7,6 +7,7 @@ import {
   comparePassword,
   createResetPasswordLink,
   createUser,
+  createUserWithOauth,
   findUserByEmail,
   findUserById,
   findVerificationEmailToken,
@@ -15,6 +16,8 @@ import {
   getHashedPassword,
   getResetPasswordToken,
   getUserByEmail,
+  getUserWithOauthId,
+  linkUserWithOauth,
   sendNewVerifyEmailLink,
   updateUserByName,
   updateUserPassword,
@@ -31,6 +34,9 @@ import {
 } from "../validation/auth.validation.js";
 import { getHtmlFromMjmlTemplate } from "../lib/get-html-from-mjml-template.js";
 import { sendMail } from "../lib/verify-email-using-resend.js";
+import { decodeIdToken, generateCodeVerifier, generateState } from "arctic";
+import { google } from "../lib/oauth/google.js";
+import { OAUTH_EXCHANGE_EXPIRY } from "../config/constants.js";
 
 export const getRegisterPage = (req, res) => {
   if (req.user) return res.redirect("/");
@@ -71,6 +77,16 @@ export const postLogin = async (req, res) => {
   if (!user) {
     req.flash("errors", "Invalid Email or Password");
     return res.redirect("/login");
+  }
+
+  if (!user.password) {
+    // database hash password
+    // if password is null
+    req.flash(
+      "errors",
+      "You have created account using social login. Please login with your social account."
+    );
+    res.redirect("/login");
   }
 
   const isPasswordMatch = await comparePassword(password, user.password);
@@ -365,4 +381,104 @@ export const postResetPassword = async (req, res) => {
   await updateUserPassword({ userId: user.id, password: newPassword });
 
   return res.redirect("/login");
+};
+
+export const getGoogleLoginPage = async (req, res) => {
+  if (req.user) return res.redirect("/");
+
+  // Generate random state
+  const state = generateState();
+
+  // Generate code_verifier (random string 43-128 chars)
+  const codeVerifier = generateCodeVerifier();
+
+  // Create authorization URL
+  const url = google.createAuthorizationURL(state, codeVerifier, [
+    "openid", // this is called scopes, here we are giving openid, and profile
+    "profile", // openid gives tokens if needed, and profile gives user information
+    // we are telling google about the information that we require from user.
+    "email",
+  ]);
+
+  const cookieConfig = {
+    httpOnly: true,
+    secure: true,
+    maxAge: OAUTH_EXCHANGE_EXPIRY,
+    sameSite: "lax", // This is such that when Google redirects to our website, cookies are maintained.
+  };
+
+  res.cookie("google_auth_state", state, cookieConfig);
+  res.cookie("google_code_verifier", codeVerifier, cookieConfig);
+
+  res.redirect(url.toString());
+};
+
+export const getGoogleLoginCallback = async (req, res) => {
+  // Google redirects with code, and state in query params. We will use code to find out the user.
+  const { code, state } = req.query;
+
+  const { google_code_verifier: codeVerifier, google_auth_state: storedState } =
+    req.cookies;
+
+  if (
+    !code ||
+    !state ||
+    !codeVerifier ||
+    !storedState ||
+    state !== storedState
+  ) {
+    req.flash(
+      "errors",
+      "Couldn't login with Google because of invalid login attempt. Please try again!"
+    );
+    return res.redirect("/login");
+  }
+
+  let token;
+  try {
+    // Arctic will verify the code given by Google with code verifier internally.
+    token = await google.validateAuthorizationCode(code, codeVerifier);
+  } catch (error) {
+    req.flash(
+      "errors",
+      "Couldn't login with Google because of invalid login attempt. Please try again!"
+    );
+    return res.redirect("/login");
+  }
+
+  const claim = decodeIdToken(token.idToken());
+  const { sub: googleUserId, name, email } = claim;
+
+  // There are few things that we should do.
+  // Condition 1: User already exists with Google's OAuth linked.
+  // Condition 2: User already exists with the same email but Google's OAuth isn't linked.
+  // Condition 3: User doesn't exist.
+
+  // If user is already linked than we will get the user.
+  let user = await getUserWithOauthId({
+    provider: "google",
+    email,
+  });
+
+  // if user exists but user is not linked with oauth
+  if (user && !user.providerAccountId) {
+    await linkUserWithOauth({
+      userId: user.id,
+      provider: "google",
+      providerAccountId: googleUserId,
+    });
+  }
+
+  // if user doesn't exist
+  if (!user) {
+    user = await createUserWithOauth({
+      name,
+      email,
+      provider: "google",
+      providerAccountId: googleUserId,
+    });
+  }
+  await authenticateUser({ req, res, user, name, email });
+
+  res.redirect("/");
 };

@@ -6,6 +6,7 @@ import {
   timestamp,
   boolean,
   text,
+  mysqlEnum,
 } from "drizzle-orm/mysql-core";
 
 export const shortLinksTable = mysqlTable("shortLinks", {
@@ -57,11 +58,24 @@ export const passwordResetTokensTable = mysqlTable("password_reset_token", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const oauthAccountsTable = mysqlTable("oauth_accounts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id")
+    .notNull()
+    .references(() => userTable.id, { onDelete: "cascade" })
+    .unique(),
+  provider: mysqlEnum("provider", ["google", "github"]).notNull(),
+  providerAccountId: varchar("provider_account_id", { length: 255 })
+    .notNull()
+    .unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const userTable = mysqlTable("users", {
   id: int().primaryKey().autoincrement(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
-  password: varchar({ length: 255 }).notNull(),
+  password: varchar({ length: 255 }),
   isEmailValid: boolean("is_email_valid").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),

@@ -11,6 +11,7 @@ import path from "path";
 import mjml2html from "mjml";
 
 import {
+  oauthAccountsTable,
   passwordResetTokensTable,
   sessionTable,
   shortLinksTable,
@@ -138,7 +139,7 @@ export const refreshTokens = async (refreshToken) => {
       user: userInfo,
     };
   } catch (error) {
-    console.error(error.message);
+    console.error("\nRefresh Token Generate Error: ", error.message);
   }
 };
 
@@ -404,3 +405,74 @@ export const clearResetPasswordToken = async (userId) => {
     .delete(passwordResetTokensTable)
     .where(eq(passwordResetTokensTable.userId, userId));
 };
+
+export async function getUserWithOauthId({ email, provider }) {
+  const [user] = await db
+    .select({
+      id: userTable.id,
+      name: userTable.name,
+      email: userTable.email,
+      isEmailValid: userTable.isEmailValid,
+      providerAccountId: oauthAccountsTable.providerAccountId,
+      provider: oauthAccountsTable.provider,
+    })
+    .from(userTable)
+    .where(eq(userTable.email, email))
+    .leftJoin(
+      oauthAccountsTable,
+      and(
+        eq(oauthAccountsTable.provider, provider),
+        eq(oauthAccountsTable.userId, userTable.id)
+      )
+    );
+
+  return user;
+}
+
+export async function linkUserWithOauth({
+  userId,
+  provider,
+  providerAccountId,
+}) {
+  await db.insert(oauthAccountsTable).values({
+    userId,
+    provider,
+    providerAccountId,
+  });
+}
+
+export async function createUserWithOauth({
+  name,
+  email,
+  provider,
+  providerAccountId,
+}) {
+  const user = await db.transaction(async (trx) => {
+    const [user] = await trx
+      .insert(userTable)
+      .values({
+        email,
+        name,
+        // password: "",
+        isEmailValid: true, // we know that google's email are valid
+      })
+      .$returningId();
+
+    await trx.insert(oauthAccountsTable).values({
+      provider,
+      providerAccountId,
+      userId: user.id,
+    });
+
+    return {
+      id: user.id,
+      name,
+      email,
+      isEmailValid: true, // not necessary
+      provider,
+      providerAccountId,
+    };
+  });
+
+  return user;
+}

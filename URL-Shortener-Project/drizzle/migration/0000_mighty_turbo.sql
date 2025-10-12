@@ -1,3 +1,14 @@
+CREATE TABLE `oauth_accounts` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`user_id` int NOT NULL,
+	`provider` enum('google','github') NOT NULL,
+	`provider_account_id` varchar(255) NOT NULL,
+	`created_at` timestamp NOT NULL DEFAULT (now()),
+	CONSTRAINT `oauth_accounts_id` PRIMARY KEY(`id`),
+	CONSTRAINT `oauth_accounts_user_id_unique` UNIQUE(`user_id`),
+	CONSTRAINT `oauth_accounts_provider_account_id_unique` UNIQUE(`provider_account_id`)
+);
+--> statement-breakpoint
 CREATE TABLE `password_reset_token` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`user_id` int NOT NULL,
@@ -34,7 +45,7 @@ CREATE TABLE `users` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(255) NOT NULL,
 	`email` varchar(255) NOT NULL,
-	`password` varchar(255) NOT NULL,
+	`password` varchar(255),
 	`is_email_valid` boolean NOT NULL DEFAULT false,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
@@ -52,6 +63,7 @@ CREATE TABLE `verifyEmailToken` (
 	CONSTRAINT `verifyEmailToken_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
+ALTER TABLE `oauth_accounts` ADD CONSTRAINT `oauth_accounts_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `password_reset_token` ADD CONSTRAINT `password_reset_token_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `sessions` ADD CONSTRAINT `sessions_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE `shortLinks` ADD CONSTRAINT `shortLinks_user_id_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE no action ON UPDATE no action;--> statement-breakpoint
