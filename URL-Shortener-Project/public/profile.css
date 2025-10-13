@@ -143,6 +143,11 @@ main {
   color: var(--text-light-color);
 }
 
+.profile-avatar .avatar-placeholder img {
+  width: 100%;
+  border-radius: 50%;
+}
+
 .profile-info .profile-name {
   font-size: 1.8rem;
   font-weight: 700;

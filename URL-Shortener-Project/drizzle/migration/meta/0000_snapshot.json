@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "8209d01f-6cf3-4343-8803-c8b3f4ca96b9",
+  "id": "4d9bd767-d970-4baa-96a1-4303ac0b68eb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "oauth_accounts": {
@@ -364,6 +364,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",

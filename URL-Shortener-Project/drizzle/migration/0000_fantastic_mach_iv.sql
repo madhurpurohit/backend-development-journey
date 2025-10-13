@@ -47,6 +47,7 @@ CREATE TABLE `users` (
 	`email` varchar(255) NOT NULL,
 	`password` varchar(255),
 	`is_email_valid` boolean NOT NULL DEFAULT false,
+	`avatar_url` text,
 	`created_at` timestamp NOT NULL DEFAULT (now()),
 	`updated_at` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `users_id` PRIMARY KEY(`id`),
