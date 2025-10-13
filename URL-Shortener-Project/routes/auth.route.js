@@ -53,8 +53,10 @@ router
   .post(authController.postResetPassword);
 
 router.route("/google").get(authController.getGoogleLoginPage);
-
 router.route("/google/callback").get(authController.getGoogleLoginCallback);
+
+router.route("/github").get(authController.getGithubLoginPage);
+router.route("/github/callback").get(authController.getGithubLoginCallback);
 
 router.route("/logout").get(authController.logoutUser);
 

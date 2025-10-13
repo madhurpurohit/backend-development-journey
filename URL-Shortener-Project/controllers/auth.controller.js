@@ -37,6 +37,8 @@ import { sendMail } from "../lib/verify-email-using-resend.js";
 import { decodeIdToken, generateCodeVerifier, generateState } from "arctic";
 import { google } from "../lib/oauth/google.js";
 import { OAUTH_EXCHANGE_EXPIRY } from "../config/constants.js";
+import { github } from "../lib/oauth/github.js";
+import { httpUrl } from "zod";
 
 export const getRegisterPage = (req, res) => {
   if (req.user) return res.redirect("/");
@@ -462,11 +464,19 @@ export const getGoogleLoginCallback = async (req, res) => {
 
   // if user exists but user is not linked with oauth
   if (user && !user.providerAccountId) {
-    await linkUserWithOauth({
-      userId: user.id,
-      provider: "google",
-      providerAccountId: googleUserId,
-    });
+    try {
+      await linkUserWithOauth({
+        userId: user.id,
+        provider: "google",
+        providerAccountId: googleUserId,
+      });
+    } catch {
+      req.flash(
+        "errors",
+        "Email already exists, & Linked with another account. Please try again!"
+      );
+      return res.redirect("/login");
+    }
   }
 
   // if user doesn't exist
@@ -478,6 +488,113 @@ export const getGoogleLoginCallback = async (req, res) => {
       providerAccountId: googleUserId,
     });
   }
+
+  await authenticateUser({ req, res, user, name, email });
+
+  res.redirect("/");
+};
+
+export const getGithubLoginPage = async (req, res) => {
+  if (req.user) return res.redirect("/");
+
+  const state = generateState();
+
+  const url = github.createAuthorizationURL(state, ["user:email"]);
+
+  const cookieConfig = {
+    httpOnly: true,
+    secure: true,
+    maxAge: OAUTH_EXCHANGE_EXPIRY,
+    sameSite: "lax",
+  };
+
+  res.cookie("github_auth_state", state, cookieConfig);
+
+  res.redirect(url.toString());
+};
+
+export const getGithubLoginCallback = async (req, res) => {
+  const { code, state } = req.query;
+  const { github_auth_state: storedState } = req.cookies;
+
+  function handleError() {
+    req.flash(
+      "errors",
+      "Couldn't login with Google because of invalid login attempt. Please try again!"
+    );
+    return res.redirect("/login");
+  }
+
+  if (!code || !state || !storedState || state !== storedState) {
+    return handleError();
+  }
+
+  let token;
+
+  try {
+    token = await github.validateAuthorizationCode(code);
+  } catch (error) {
+    return handleError();
+  }
+
+  const githubUserResponse = await fetch("https://api.github.com/user", {
+    headers: {
+      Authorization: `Bearer ${token.accessToken()}`,
+    },
+  });
+
+  if (!githubUserResponse.ok) return handleError();
+
+  const githubUser = await githubUserResponse.json();
+
+  const { id: githubUserId, name } = githubUser;
+
+  const githubEmailResponse = await fetch(
+    "https://api.github.com/user/emails",
+    {
+      headers: {
+        Authorization: `Bearer ${token.accessToken()}`,
+      },
+    }
+  );
+
+  if (!githubEmailResponse.ok) return handleError();
+
+  const emails = await githubEmailResponse.json();
+
+  const email = emails.filter((e) => e.primary)[0].email; // In GitHub we can have multiple emails, but we only want primary email.
+  if (!email) return handleError();
+
+  let user = await getUserWithOauthId({
+    provider: "github",
+    email,
+  });
+
+  if (user && !user.providerAccountId) {
+    try {
+      await linkUserWithOauth({
+        userId: user.id,
+        provider: "github",
+        providerAccountId: githubUserId.toString(),
+      });
+    } catch {
+      res.flash(
+        "errors",
+        "Email already exists, & Linked with another account. Please try again!"
+      );
+      return res.redirect("/login");
+    }
+  }
+
+  if (!user) {
+    user = await createUserWithOauth({
+      name,
+      email,
+      provider: "github",
+      providerAccountId: githubUserId,
+    });
+  }
+
   await authenticateUser({ req, res, user, name, email });
 
   res.redirect("/");

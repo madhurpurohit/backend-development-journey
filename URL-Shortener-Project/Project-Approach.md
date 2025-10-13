@@ -1431,6 +1431,26 @@ if (!user.password) {
 
 ## 30. How to implement Login with GitHub?
 
+In this we will also register user with GitHub to get OAuth provider or Client ID.
 
+**For That:**
+
+1. Login our GitHub account. & than go to settings.
+
+2. Inside settings go to Developer Settings.
+
+3. Inside Developer Settings go to OAuth Apps.
+
+4. Click on New OAuth App.
+
+5. Give the name to your app & Homepage URL. Application Description is optional.
+
+6. Enter Authorization Callback URL, This is same like Google /google/callback. This will same /github/callback.
+
+7. Create on Register button.
+
+8. Than we will get Client ID, & for Client Secret we will firstly generate it for this we have to click on Generate a new Client.
+
+9. Than we will get Client Secret. So copy this because it will show only the first time after that we want see this.
 
 ---
