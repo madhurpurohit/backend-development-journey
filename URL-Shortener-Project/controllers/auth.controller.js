@@ -30,6 +30,7 @@ import {
   verifyEmailSchema,
   verifyPasswordSchema,
   verifyResetPasswordSchema,
+  setPasswordSchema,
   verifyUserSchema,
 } from "../validation/auth.validation.js";
 import { getHtmlFromMjmlTemplate } from "../lib/get-html-from-mjml-template.js";
@@ -38,7 +39,6 @@ import { decodeIdToken, generateCodeVerifier, generateState } from "arctic";
 import { google } from "../lib/oauth/google.js";
 import { OAUTH_EXCHANGE_EXPIRY } from "../config/constants.js";
 import { github } from "../lib/oauth/github.js";
-import { httpUrl } from "zod";
 
 export const getRegisterPage = (req, res) => {
   if (req.user) return res.redirect("/");
@@ -184,6 +184,7 @@ export const getProfilePage = async (req, res) => {
       name: user.name,
       email: user.email,
       isEmailValid: user.isEmailValid,
+      hasPassword: Boolean(user.password),
       createdAt: user.createdAt,
       links: userShortLinks,
     },
@@ -598,4 +599,40 @@ export const getGithubLoginCallback = async (req, res) => {
   await authenticateUser({ req, res, user, name, email });
 
   res.redirect("/");
+};
+
+export const getSetPasswordPage = (req, res) => {
+  if (!req.user) return res.redirect("/login");
+
+  return res.render("auth/set-password", {
+    errors: req.flash("errors"),
+  });
+};
+
+export const postSetPassword = async (req, res) => {
+  if (!req.user) return res.redirect("/login");
+
+  const { data, error } = setPasswordSchema.safeParse(req.body);
+
+  if (error) {
+    const errorMessage = error.issues.map((err) => err.message);
+    req.flash("errors", errorMessage);
+    return res.redirect("/set-password");
+  }
+
+  const { newPassword } = data;
+
+  //* If user already has a password, than he can't set a new password.
+  const user = await findUserById(req.user.id);
+  if (user.password) {
+    req.flash(
+      "errors",
+      "You already have a password. Instead of setting a new password, you can change your password."
+    );
+    return res.redirect("/set-password");
+  }
+
+  await updateUserPassword({ userId: user.id, password: newPassword });
+
+  return res.redirect("/profile");
 };

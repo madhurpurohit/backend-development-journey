@@ -52,6 +52,8 @@ router
   .get(authController.getResetPasswordPage)
   .post(authController.postResetPassword);
 
+router.route("/set-password").get(authController.getSetPasswordPage).post(authController.postSetPassword);
+
 router.route("/google").get(authController.getGoogleLoginPage);
 router.route("/google/callback").get(authController.getGoogleLoginCallback);
 
