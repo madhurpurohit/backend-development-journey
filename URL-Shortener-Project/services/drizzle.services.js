@@ -1,13 +1,27 @@
-import { eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import { db } from "../config/db.js";
 import { shortLinksTable } from "../drizzle/schema.js";
 
-export const loadLinks = async (userId) => {
+export const loadLinks = async ({ userId, limit = 10, offset = 0 }) => {
+  const condition = eq(shortLinksTable.userId, userId);
+
   const links = await db
     .select()
     .from(shortLinksTable)
-    .where(eq(shortLinksTable.userId, userId));
-  return links;
+    .where(condition)
+    .orderBy(desc(shortLinksTable.createdAt))
+    .limit(limit) // Here limit means how many links you want to fetch.
+    .offset(offset); // Here offset means how many links you want to skip.
+
+  const [{ totalCount }] = await db
+    .select({ totalCount: count() })
+    .from(shortLinksTable)
+    .where(condition);
+
+  return {
+    shortLinks: links,
+    totalCount,
+  };
 };
 
 export const checkShortCode = async (finalShortCode) => {

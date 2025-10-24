@@ -32,7 +32,10 @@
 27. [What is CSRF Attacks?](#27-what-is-csrf-attacks)
 28. [What is PKCE?](#28-what-is-pkce)
 29. [What is Arctic & Code Part](#29-what-is-arctic)
-30. []()
+30. [How to implement Login with GitHub?](#30-how-to-implement-login-with-github)
+31. [How to send email from Nodemailer to user's gmail account?](#31-how-to-send-email-from-nodemailer-to-users-gmail-account)
+32. []()
+33. []()
 
 ---
 
@@ -1452,5 +1455,52 @@ In this we will also register user with GitHub to get OAuth provider or Client I
 8. Than we will get Client ID, & for Client Secret we will firstly generate it for this we have to click on Generate a new Client.
 
 9. Than we will get Client Secret. So copy this because it will show only the first time after that we want see this.
+
+---
+
+## 31. How to send email from Nodemailer to user's gmail account?
+
+1. Go ot this website with our own account [Google App Password](https://myaccount.google.com/apppasswords)
+
+2. Write App Name & click on Create.
+
+3. Copy App Password, because it will show only the first time after that we can't see this.
+
+4. Go to nodemailer.js file, & paste the below code:
+
+```js
+import nodemailer from "nodemailer";
+import "dotenv/config";
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+export const sendMail = async ({ to, subject, html }) => {
+  try {
+    const info = await transporter.sendMail({
+      from: `'URL SHORTENER' < ${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+
+    return info;
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+};
+```
+
+---
+
+## 32.
 
 ---

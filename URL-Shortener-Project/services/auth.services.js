@@ -23,8 +23,8 @@ import {
   MILLISECONDS_PER_SECOND,
   REFRESH_TOKEN_EXPIRY,
 } from "../config/constants.js";
-// import { sendMail } from "../lib/nodemailer.js";
-import { sendMail } from "../lib/verify-email-using-resend.js";
+import { sendMail } from "../lib/nodemailer.js";
+// import { sendMail } from "../lib/verify-email-using-resend.js";
 
 export const getUserByEmail = async (email) => {
   const [user] = await db

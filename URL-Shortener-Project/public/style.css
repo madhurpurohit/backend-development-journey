@@ -31,6 +31,8 @@
   --edit-btn: #00ff26e6;
   --links-background: #e7e7e7;
   --error: #ef4444;
+  --disabled-text: #aaa;
+  --border-color: #ddd;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -48,6 +50,8 @@
     --scrollbar-thumb-hover-bg: #888;
     --copy-btn: #fff;
     --links-background: #393939;
+    --disabled-text: #777;
+    --border-color: #444;
   }
 }
 
@@ -73,7 +77,7 @@ main {
 
 #container {
   width: 80%;
-  max-width: 700px;
+  max-width: 1200px;
   background-color: var(--container-background);
   padding: 20px;
   box-shadow: var(--box-shadow);
@@ -135,14 +139,12 @@ main {
 #container input {
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   letter-spacing: 0.5px;
   outline: none;
   border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -o-border-radius: 5px;
+  background-color: var(--container-background);
+  color: var(--text-color);
 }
 
 #container > form > button {
@@ -190,9 +192,9 @@ main {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-height: 300px;
   padding: 20px;
-  overflow-y: auto;
+  /* max-height: 300px; */
+  /* overflow-y: auto; */
   background: var(--url-background);
   border-radius: 10px;
   -webkit-border-radius: 10px;
@@ -209,10 +211,10 @@ main {
   padding: 10px 20px;
   border-radius: 10px;
   transition: opacity 200ms linear;
+}
 
-  &:hover {
-    opacity: 0.75;
-  }
+#container .links:hover {
+  opacity: 0.75;
 }
 
 #container ul li {
@@ -317,11 +319,59 @@ main {
 
 .url-update a {
   text-decoration: none;
-
-  & i {
-    color: var(--edit-btn);
-  }
 }
+
+.url-update a i {
+  color: var(--edit-btn);
+}
+
+/* === PAGINATION STYLES START === */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* Added for responsiveness */
+  margin: 30px 0 10px; /* Added more top margin */
+  gap: 8px; /* Added gap */
+}
+
+.page-link {
+  display: inline-block;
+  padding: 8px 14px; /* Made buttons slightly larger */
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  background-color: var(--container-background); /* Use theme background */
+  text-decoration: none;
+  border-radius: 6px; /* Rounded corners */
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.page-link:hover:not(.current):not(.disabled) {
+  opacity: 0.7;
+}
+
+.page-link.current {
+  background-color: var(--button-background); /* Use theme primary color */
+  color: var(--button-text-color);
+  border-color: var(--button-border);
+  font-weight: 700;
+  cursor: default;
+}
+
+.page-link.disabled {
+  color: var(--disabled-text); /* Use theme disabled color */
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.ellipsis {
+  margin: 0 5px;
+  color: var(--disabled-text);
+  padding: 8px 0;
+}
+/* === PAGINATION STYLES END === */
 
 @media (max-width: 760px) {
   html {
@@ -331,9 +381,19 @@ main {
   #container .links {
     flex-direction: column;
     align-items: flex-start;
+  }
 
-    & .url-option {
-      margin: 10px 0 0;
-    }
+  #container .links .url-option {
+    margin: 10px 0 0;
+  }
+
+  /* Responsive pagination */
+  .page-link {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+
+  .pagination {
+    gap: 5px;
   }
 }

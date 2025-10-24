@@ -1,5 +1,4 @@
-import { error } from "console";
-import z, { email } from "zod";
+import z from "zod";
 
 const nameSchema = z
   .string()

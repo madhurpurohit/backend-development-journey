@@ -8,13 +8,22 @@ import {
   updateShortCode,
 } from "../services/drizzle.services.js";
 import z from "zod";
-import { shortenerSchema } from "../validation/shortener.validator.js";
+import {
+  shortenerSchema,
+  shortenerSearchParamsSchema,
+} from "../validation/shortener.validator.js";
 
 export const getShortenerPage = async (req, res) => {
   try {
     if (!req.user) return res.redirect("/login");
+    const searchParams = shortenerSearchParamsSchema.parse(req.query);
 
-    const links = await loadLinks(req.user.id);
+    // const links = await loadLinks(req.user.id);
+    const { shortLinks, totalCount } = await loadLinks({
+      userId: req.user.id,
+      limit: 10,
+      offset: (searchParams.page - 1) * 10,
+    });
 
     //* How to get cookies in Normal Methods?
     // let isLoggedIn = req.headers.cookie;
@@ -27,9 +36,14 @@ export const getShortenerPage = async (req, res) => {
 
     //* How to get cookie while using cookie-parser?
     // const { isLoggedIn } = req.cookies;
+
+    const totalPages = Math.ceil(totalCount / 10);
+
     return res.render("index", {
-      links,
+      links: shortLinks,
       host: req.hostname,
+      currentPage: searchParams.page,
+      totalPages,
       errors: req.flash("errors"),
     });
   } catch (error) {
