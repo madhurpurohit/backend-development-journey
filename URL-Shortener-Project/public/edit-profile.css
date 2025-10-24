@@ -13,7 +13,8 @@
   --success-color: #10b981;
   --warning-bg: rgba(245, 158, 11, 0.1);
   --warning-color: #f59e0b;
-  --error: #ef4444;
+  --error: #ef4444e9;
+  --error-hover: #ff1d1d;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -99,6 +100,84 @@ body {
   margin-bottom: 30px;
   color: var(--text-color);
   text-align: center;
+}
+
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.avatar-preview {
+  width: 130px;
+  height: 130px;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid var(--border-color);
+  background-color: var(--page-background);
+}
+
+#avatar-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: var(--subtle-text-color);
+}
+
+.avatar-edit {
+  display: flex;
+  flex-wrap: wrap; /* Added for smaller screens */
+  justify-content: center; /* Center buttons on wrap */
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.avatar-input {
+  display: none;
+}
+
+.avatar-upload-btn,
+.remove-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* Prevent button text wrapping */
+}
+
+.avatar-upload-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.avatar-upload-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.remove-avatar-btn {
+  background-color: var(--error);
+  color: white;
+}
+
+.remove-avatar-btn:hover {
+  background-color: var(--error-hover);
 }
 
 .form-group {

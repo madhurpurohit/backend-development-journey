@@ -1501,6 +1501,12 @@ export const sendMail = async ({ to, subject, html }) => {
 
 ---
 
-## 32.
+## 32. How to use Multer for Uploading Files?
+
+1. Install Multer.
+
+```bash
+npm i multer
+```
 
 ---

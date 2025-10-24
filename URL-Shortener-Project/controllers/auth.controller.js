@@ -246,6 +246,7 @@ export const getEditProfilePage = async (req, res) => {
   return res.render("auth/edit-profile", {
     name: user.name,
     errors: req.flash("errors"),
+    avatarUrl: user.avatarUrl,
   });
 };
 
@@ -260,7 +261,16 @@ export const postEditProfile = async (req, res) => {
     return res.redirect("/edit-profile");
   }
 
-  await updateUserByName({ userId: req.user.id, name: data.name });
+  // await updateUserByName({ userId: req.user.id, name: data.name });
+
+  //* How to get the file which is uploaded in the form?
+  const fileUrl = req.file ? `uploads/avatars/${req.file.filename}` : undefined;
+
+  await updateUserByName({
+    userId: req.user.id,
+    name: data.name,
+    avatarUrl: fileUrl,
+  });
 
   return res.redirect("/profile");
 };
